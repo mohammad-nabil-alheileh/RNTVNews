@@ -4,24 +4,38 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "web": "webpack serve --mode development",
+    "build:web": "webpack --mode production && es-check es2021 dist/bundle.js",
+    "typecheck": "tsc",
+    "webos:package": "ares-package dist -o build/webos",
+    "webos:install": "ares-install --device tv build/webos/com.mohammad.tvnews_0.0.1_all.ipk",
+    "webos:launch": "ares-launch --device tv com.mohammad.tvnews",
+    "webos:debug": "ares-inspect --device tv --app com.mohammad.tvnews --open",
+    "webos": "npm run build:web && npm run webos:package && npm run webos:install && npm run webos:launch"
   },
   "dependencies": {
+    "@fontsource/noto-sans-arabic": "^5.3.0",
+    "@react-navigation/native": "^7.5.1",
+    "@react-navigation/native-stack": "^7.21.0",
+    "core-js": "^3.51.0",
     "react": "19.2.0",
+    "react-dom": "^19.2.0",
     "react-native": "npm:react-native-tvos@0.83.0-0",
-    "@react-native/new-app-screen": "0.83.0",
-    "react-native-safe-area-context": "^5.5.2"
+    "react-native-safe-area-context": "^5.5.2",
+    "react-native-screens": "~4.25.0",
+    "react-native-web": "^0.21.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
+    "@babel/preset-react": "^7.29.7",
+    "@babel/preset-typescript": "^7.29.7",
     "@babel/runtime": "^7.25.0",
     "@react-native-community/cli": "20.0.0",
     "@react-native-community/cli-platform-android": "20.0.0",
-    "@react-native-community/cli-platform-ios": "20.0.0",
     "@react-native/babel-preset": "0.83.0",
     "@react-native/eslint-config": "0.83.0",
     "@react-native/metro-config": "0.83.0",
@@ -29,11 +43,19 @@
     "@types/jest": "^29.5.13",
     "@types/react": "^19.2.0",
     "@types/react-test-renderer": "^19.1.0",
+    "babel-loader": "^10.1.1",
+    "babel-plugin-react-native-web": "^0.21.4",
+    "copy-webpack-plugin": "^14.0.0",
+    "es-check": "^8.0.2",
     "eslint": "^8.19.0",
+    "html-webpack-plugin": "^5.6.8",
     "jest": "^29.6.3",
     "prettier": "2.8.8",
     "react-test-renderer": "19.2.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "webpack": "^5.112.2",
+    "webpack-cli": "^7.2.3",
+    "webpack-dev-server": "^6.1.0"
   },
   "engines": {
     "node": ">=20"

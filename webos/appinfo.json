@@ -1,0 +1,13 @@
+{
+  "id": "com.mohammad.tvnews",
+  "version": "0.0.1",
+  "vendor": "Mohammad",
+  "type": "web",
+  "main": "index.html",
+  "title": "TV News Reader",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "resolution": "1920x1080",
+  "disableBackHistoryAPI": true,
+  "requiredACG": []
+}

@@ -87,7 +87,7 @@ export function CategoryRow({
             renderItem={({ item, index }) => (
               <StoryCard
                 story={item}
-                onPress={onPressStory}
+                onPress={story => onPressStory(story, state.data)}
                 onFocus={() => {
                   centerOn(index);
                   onFocus?.();

@@ -3,6 +3,6 @@ import { Story } from '../../types/story';
 
 export interface CategoryRowProps {
   category: Category;
-  onPressStory: (story: Story) => void;
+  onPressStory: (story: Story, list: Story[]) => void;
   onFocus?: () => void;
 }

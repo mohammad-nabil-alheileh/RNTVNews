@@ -25,7 +25,11 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
   const { scrollRef, onLayout, sectionLayout, centerOn } = useCenteredScroll();
 
   const openStory = useCallback(
-    (story: Story) => navigation.navigate('Article', { storyId: story.id }),
+    (story: Story, list: Story[]) =>
+      navigation.navigate('Article', {
+        storyId: story.id,
+        queue: list.map(item => item.id),
+      }),
     [navigation],
   );
 
@@ -93,7 +97,7 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
           <FocusGroup trap={['left', 'right']} style={styles.topStory}>
             <TopStory
               story={top}
-              onPress={openStory}
+              onPress={story => openStory(story, state.data)}
               onFocus={() => centerOn(TOP_SECTION)}
               hasTVPreferredFocus
             />

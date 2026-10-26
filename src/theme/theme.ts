@@ -37,6 +37,7 @@ export function createTheme(language: Language) {
   const fontSize = {
     caption: scale(20),
     body: scale(24),
+    reading: scale(30),
     title: scale(32),
     headline: scale(44),
   };
@@ -68,10 +69,12 @@ export function createTheme(language: Language) {
       lg: scale(16),
     },
     fontFamily,
+    monoFontFamily: 'monospace',
     fontSize,
     lineHeight: {
       caption: lineHeightOf(fontSize.caption),
       body: lineHeightOf(fontSize.body),
+      reading: lineHeightOf(fontSize.reading),
       title: lineHeightOf(fontSize.title),
       headline: lineHeightOf(fontSize.headline),
     },

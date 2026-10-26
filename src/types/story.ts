@@ -10,8 +10,29 @@ export type Story = {
   url: string;
 };
 
+export type ArticleTextKind =
+  | 'heading'
+  | 'paragraph'
+  | 'listItem'
+  | 'quote'
+  | 'code';
+
+export interface ArticleTextBlock {
+  kind: ArticleTextKind;
+  text: string;
+}
+
+export interface ArticleImageBlock {
+  kind: 'image';
+  url: string;
+  alt: string;
+  aspectRatio: number | null;
+}
+
+export type ArticleBlock = ArticleTextBlock | ArticleImageBlock;
+
 export type Article = Story & {
-  bodyHtml: string;
+  blocks: ArticleBlock[];
 };
 
 export type LoadState<T> =

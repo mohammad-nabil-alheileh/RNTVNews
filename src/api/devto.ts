@@ -2,6 +2,7 @@ import { ApiErrorKind } from '../types/api';
 import { DevtoArticle } from '../types/devto';
 import { Article, Story } from '../types/story';
 import { addStories } from './storyStore';
+import { parseArticleBody } from './articleBody';
 
 const BASE_URL = 'https://dev.to/api';
 const PAGE_SIZE = 30;
@@ -84,5 +85,5 @@ export async function fetchArticle(id: number): Promise<Article> {
   const raw = await getJson<DevtoArticle>(`/articles/${id}`);
   const story = toStory(raw);
   addStories([story]);
-  return { ...story, bodyHtml: raw.body_html ?? '' };
+  return { ...story, blocks: parseArticleBody(raw.body_html ?? '') };
 }

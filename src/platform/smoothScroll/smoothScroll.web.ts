@@ -46,7 +46,7 @@ function domNode(ref: { getScrollableNode(): unknown } | null) {
 export function scrollListTo<T>(list: FlatList<T> | null, offset: number) {
   const node = domNode(list);
   if (node) {
-    animate(node, 'scrollLeft', offset);
+    animate(node, list?.props.horizontal ? 'scrollLeft' : 'scrollTop', offset);
   }
 }
 

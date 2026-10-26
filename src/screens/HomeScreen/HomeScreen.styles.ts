@@ -1,10 +1,11 @@
-import {StyleSheet} from 'react-native';
-import {Theme} from '../../theme/theme';
+import { StyleSheet } from 'react-native';
+import { Theme } from '../../theme/theme';
 
-export const makeStyles = ({safeArea, spacing}: Theme) =>
+export const makeStyles = ({ safeArea, spacing }: Theme) =>
   StyleSheet.create({
     content: {
-      paddingVertical: safeArea.vertical,
+      paddingTop: spacing.lg,
+      paddingBottom: safeArea.vertical,
       gap: spacing.xxl,
     },
     topStory: {

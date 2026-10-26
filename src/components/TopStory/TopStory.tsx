@@ -1,11 +1,12 @@
-import React, {useMemo, useState} from 'react';
-import {Image, Pressable, Text, View} from 'react-native';
-import {formatShortDate} from '../../i18n/formatDate';
-import {useLanguage} from '../../i18n/language';
-import {autoDirection} from '../../platform/textDirection/textDirection';
-import {useStyles} from '../../theme/theme';
-import {DESCRIPTION_LINES, makeStyles, TITLE_LINES} from './TopStory.styles';
-import {TopStoryProps} from './TopStory.types';
+import React, { useMemo, useState } from 'react';
+import { Image, Pressable, Text, View } from 'react-native';
+import { formatShortDate } from '../../i18n/formatDate';
+import { useLanguage } from '../../i18n/language';
+import { autoDirection } from '../../platform/textDirection/textDirection';
+import { preferredFocusProps } from '../../platform/preferredFocus/preferredFocus';
+import { useStyles } from '../../theme/theme';
+import { DESCRIPTION_LINES, makeStyles, TITLE_LINES } from './TopStory.styles';
+import { TopStoryProps } from './TopStory.types';
 
 export function TopStory({
   story,
@@ -35,13 +36,15 @@ export function TopStory({
       }}
       onBlur={() => setFocused(false)}
       hasTVPreferredFocus={hasTVPreferredFocus}
+      {...preferredFocusProps(hasTVPreferredFocus)}
       accessible
       accessibilityRole="button"
       accessibilityLabel={`Top story: ${story.title}, ${meta}`}
-      style={[styles.container, focused && styles.focused]}>
+      style={[styles.container, focused && styles.focused]}
+    >
       {showImage && (
         <Image
-          source={{uri: story.imageUrl!}}
+          source={{ uri: story.imageUrl! }}
           resizeMode="cover"
           onError={() => setImageFailed(true)}
           style={styles.image}
@@ -52,14 +55,16 @@ export function TopStory({
         <Text
           {...autoDirection}
           numberOfLines={TITLE_LINES}
-          style={styles.title}>
+          style={styles.title}
+        >
           {story.title}
         </Text>
         {story.description ? (
           <Text
             {...autoDirection}
             numberOfLines={DESCRIPTION_LINES}
-            style={styles.description}>
+            style={styles.description}
+          >
             {story.description}
           </Text>
         ) : null}

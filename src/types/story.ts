@@ -15,7 +15,7 @@ export type Article = Story & {
 };
 
 export type LoadState<T> =
-  | {status: 'loading'}
-  | {status: 'error'; error: string}
-  | {status: 'offline'}
-  | {status: 'success'; data: T};
+  | { status: 'loading' }
+  | { status: 'error'; error: string }
+  | { status: 'offline' }
+  | { status: 'success'; data: T };

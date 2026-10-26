@@ -1,15 +1,19 @@
 import React from 'react';
-import {StatusView} from '../../components/shared/StatusView/StatusView';
-import {ScreenProps} from '../../types/navigation';
+import { MainLayout } from '../../components/shared/MainLayout/MainLayout';
+import { StatusView } from '../../components/shared/StatusView/StatusView';
+import { ScreenProps } from '../../types/navigation';
 
-export function CategoryScreen({navigation}: ScreenProps<'Category'>) {
+export function CategoryScreen({ navigation }: ScreenProps<'Category'>) {
   return (
-    <StatusView
-      kind="empty"
-      title="Category"
-      actionLabel="Back"
-      onAction={() => navigation.goBack()}
-      hasTVPreferredFocus
-    />
+    <MainLayout current="Category">
+      <StatusView
+        kind="empty"
+        title="Category"
+        message="Coming soon"
+        actionLabel="Back"
+        onAction={() => navigation.goBack()}
+        hasTVPreferredFocus
+      />
+    </MainLayout>
   );
 }

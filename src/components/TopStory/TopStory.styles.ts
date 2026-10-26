@@ -1,5 +1,5 @@
-import {StyleSheet} from 'react-native';
-import {Theme} from '../../theme/theme';
+import { StyleSheet } from 'react-native';
+import { Theme } from '../../theme/theme';
 
 export const TITLE_LINES = 2;
 export const DESCRIPTION_LINES = 2;

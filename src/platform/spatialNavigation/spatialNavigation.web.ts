@@ -1,4 +1,4 @@
-import {FocusDirection} from '../../types/focus';
+import { FocusDirection } from '../../types/focus';
 
 const KEY_DIRECTIONS: Record<string, FocusDirection> = {
   ArrowLeft: 'left',
@@ -18,6 +18,7 @@ const FOCUSABLE =
   '[tabindex="0"], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), a[href]';
 const GROUP = '[data-focus-group]';
 const OPEN_DIALOG = '[role="dialog"][aria-modal="true"]';
+const PREFERRED = '[data-preferred-focus]';
 const REPEAT_INTERVAL_MS = 120;
 const HISTORY_SIZE = 50;
 const MIN_SHIFT = 0.25;
@@ -128,8 +129,7 @@ function rememberedTarget(
   current: HTMLElement,
 ): HTMLElement {
   const entered = groupsOf(target).filter(
-    group =>
-      !group.contains(current) && group.dataset.focusRemember === 'true',
+    group => !group.contains(current) && group.dataset.focusRemember === 'true',
   );
   const outermost = entered[entered.length - 1];
   if (!outermost) {
@@ -153,10 +153,10 @@ function isOnScreen(element: HTMLElement): boolean {
 }
 
 function focus(element: HTMLElement) {
-  element.focus({preventScroll: true});
+  element.focus({ preventScroll: true });
   setTimeout(() => {
     if (document.activeElement === element && !isOnScreen(element)) {
-      element.scrollIntoView({block: 'nearest', inline: 'nearest'});
+      element.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     }
   }, SCROLL_FALLBACK_DELAY_MS);
 }
@@ -239,7 +239,10 @@ function restoreTarget(root: ParentNode): HTMLElement | undefined {
       return element;
     }
   }
-  return focusablesIn(root)[0];
+  const preferred = Array.from(
+    root.querySelectorAll<HTMLElement>(PREFERRED),
+  ).find(isVisible);
+  return preferred ?? focusablesIn(root)[0];
 }
 
 function onFocusIn(event: FocusEvent) {
@@ -286,5 +289,5 @@ export function startSpatialNavigation(): void {
       scheduled = false;
       recoverLostFocus();
     });
-  }).observe(document.body, {childList: true, subtree: true});
+  }).observe(document.body, { childList: true, subtree: true });
 }

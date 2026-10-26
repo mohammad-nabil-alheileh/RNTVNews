@@ -1,15 +1,15 @@
-import React, {Component, ErrorInfo} from 'react';
-import {StatusView} from '../StatusView/StatusView';
-import {ErrorBoundaryProps, ErrorBoundaryState} from './ErrorBoundary.types';
+import React, { Component, ErrorInfo } from 'react';
+import { StatusView } from '../StatusView/StatusView';
+import { ErrorBoundaryProps, ErrorBoundaryState } from './ErrorBoundary.types';
 
 export class ErrorBoundary extends Component<
   ErrorBoundaryProps,
   ErrorBoundaryState
 > {
-  state: ErrorBoundaryState = {hasError: false};
+  state: ErrorBoundaryState = { hasError: false };
 
   static getDerivedStateFromError(): ErrorBoundaryState {
-    return {hasError: true};
+    return { hasError: true };
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
@@ -17,7 +17,7 @@ export class ErrorBoundary extends Component<
   }
 
   private retry = () => {
-    this.setState({hasError: false});
+    this.setState({ hasError: false });
   };
 
   render() {

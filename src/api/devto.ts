@@ -1,12 +1,11 @@
-import {ApiErrorKind} from '../types/api';
-import {DevtoArticle} from '../types/devto';
-import {Article, Story} from '../types/story';
-import {addStories} from './storyStore';
+import { ApiErrorKind } from '../types/api';
+import { DevtoArticle } from '../types/devto';
+import { Article, Story } from '../types/story';
+import { addStories } from './storyStore';
 
 const BASE_URL = 'https://dev.to/api';
 const PAGE_SIZE = 30;
 const TIMEOUT_MS = 15000;
-
 
 export class ApiError extends Error {
   kind: ApiErrorKind;
@@ -23,7 +22,7 @@ async function getJson<T>(path: string): Promise<T> {
 
   let response: Response;
   try {
-    response = await fetch(BASE_URL + path, {signal: controller.signal});
+    response = await fetch(BASE_URL + path, { signal: controller.signal });
   } catch (cause) {
     if (__DEV__) {
       console.warn(`dev.to request failed: ${path}`, cause);
@@ -85,5 +84,5 @@ export async function fetchArticle(id: number): Promise<Article> {
   const raw = await getJson<DevtoArticle>(`/articles/${id}`);
   const story = toStory(raw);
   addStories([story]);
-  return {...story, bodyHtml: raw.body_html ?? ''};
+  return { ...story, bodyHtml: raw.body_html ?? '' };
 }

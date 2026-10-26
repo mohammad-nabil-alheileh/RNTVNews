@@ -1,16 +1,17 @@
-import React, {useMemo, useState} from 'react';
-import {Image, Pressable, Text, View} from 'react-native';
-import {formatShortDate} from '../../../i18n/formatDate';
-import {useLanguage} from '../../../i18n/language';
-import {autoDirection} from '../../../platform/textDirection/textDirection';
-import {useStyles, useTheme} from '../../../theme/theme';
+import React, { useMemo, useState } from 'react';
+import { Image, Pressable, Text, View } from 'react-native';
+import { formatShortDate } from '../../../i18n/formatDate';
+import { useLanguage } from '../../../i18n/language';
+import { autoDirection } from '../../../platform/textDirection/textDirection';
+import { preferredFocusProps } from '../../../platform/preferredFocus/preferredFocus';
+import { useStyles, useTheme } from '../../../theme/theme';
 import {
   makeStyles,
   STORY_CARD_WIDTH,
   storyCardImageHeight,
   TITLE_LINES,
 } from './StoryCard.styles';
-import {StoryCardProps} from './StoryCard.types';
+import { StoryCardProps } from './StoryCard.types';
 
 export function StoryCard({
   story,
@@ -45,17 +46,19 @@ export function StoryCard({
       }}
       onBlur={() => setFocused(false)}
       hasTVPreferredFocus={hasTVPreferredFocus}
+      {...preferredFocusProps(hasTVPreferredFocus)}
       accessible
       accessibilityRole="button"
       accessibilityLabel={`${story.title}, ${meta}`}
-      style={[styles.card, {width: cardWidth}, focused && styles.focused]}>
-      <View style={[styles.image, {height: imageHeight}]}>
+      style={[styles.card, { width: cardWidth }, focused && styles.focused]}
+    >
+      <View style={[styles.image, { height: imageHeight }]}>
         {showImage && (
           <Image
-            source={{uri: story.imageUrl!}}
+            source={{ uri: story.imageUrl! }}
             resizeMode="cover"
             onError={() => setImageFailed(true)}
-            style={{width: cardWidth, height: imageHeight}}
+            style={{ width: cardWidth, height: imageHeight }}
           />
         )}
       </View>
@@ -63,7 +66,8 @@ export function StoryCard({
         <Text
           {...autoDirection}
           numberOfLines={TITLE_LINES}
-          style={styles.title}>
+          style={styles.title}
+        >
           {story.title}
         </Text>
         <Text {...autoDirection} numberOfLines={1} style={styles.meta}>

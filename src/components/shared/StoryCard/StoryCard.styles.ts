@@ -1,11 +1,11 @@
-import {StyleSheet} from 'react-native';
-import {Theme} from '../../../theme/theme';
+import { StyleSheet } from 'react-native';
+import { Theme } from '../../../theme/theme';
 
 export const TITLE_LINES = 2;
 export const STORY_CARD_WIDTH = 384;
 
 export const storyCardImageHeight = (
-  {scale}: Theme,
+  { scale }: Theme,
   width: number = STORY_CARD_WIDTH,
 ) => Math.round((scale(width) * 9) / 16);
 
@@ -39,7 +39,7 @@ export const makeStyles = ({
     },
     focused: {
       borderColor: colors.focus,
-      transform: [{scale: focus.scale}],
+      transform: [{ scale: focus.scale }],
     },
     image: {
       width: '100%',

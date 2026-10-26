@@ -1,19 +1,19 @@
-import {useCallback, useEffect, useState} from 'react';
-import {ApiError} from '../../api/devto';
-import {LoadState} from '../../types/story';
+import { useCallback, useEffect, useState } from 'react';
+import { ApiError } from '../../api/devto';
+import { LoadState } from '../../types/story';
 
 export function useLoad<T>(load: () => Promise<T>) {
-  const [state, setState] = useState<LoadState<T>>({status: 'loading'});
+  const [state, setState] = useState<LoadState<T>>({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let active = true;
-    setState({status: 'loading'});
+    setState({ status: 'loading' });
 
     load().then(
       data => {
         if (active) {
-          setState({status: 'success', data});
+          setState({ status: 'success', data });
         }
       },
       (error: unknown) => {
@@ -21,10 +21,11 @@ export function useLoad<T>(load: () => Promise<T>) {
           return;
         }
         if (error instanceof ApiError && error.kind === 'offline') {
-          setState({status: 'offline'});
+          setState({ status: 'offline' });
         } else {
-          const message = error instanceof Error ? error.message : String(error);
-          setState({status: 'error', error: message});
+          const message =
+            error instanceof Error ? error.message : String(error);
+          setState({ status: 'error', error: message });
         }
       },
     );
@@ -36,5 +37,5 @@ export function useLoad<T>(load: () => Promise<T>) {
 
   const reload = useCallback(() => setAttempt(n => n + 1), []);
 
-  return {state, reload};
+  return { state, reload };
 }

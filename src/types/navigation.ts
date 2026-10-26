@@ -1,9 +1,9 @@
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export type RootStackParamList = {
   Home: undefined;
-  Category: {tag?: string};
-  Article: {storyId: number};
+  Category: { tag?: string };
+  Article: { storyId: number };
   Search: undefined;
   Saved: undefined;
   Settings: undefined;

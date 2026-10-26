@@ -1,4 +1,4 @@
-import {Story} from '../../../types/story';
+import { Story } from '../../../types/story';
 
 export interface StoryCardProps {
   story: Story;

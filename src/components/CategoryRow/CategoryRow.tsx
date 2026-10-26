@@ -1,17 +1,17 @@
-import React, {useCallback} from 'react';
-import {FlatList, Text, View} from 'react-native';
-import {fetchStoriesByTag} from '../../api/devto';
-import {useCenteredRail} from '../../hooks/useCenteredRail/useCenteredRail';
-import {useLoad} from '../../hooks/useLoad/useLoad';
-import {useLanguage} from '../../i18n/language';
-import {useStyles, useTheme} from '../../theme/theme';
-import {Story} from '../../types/story';
-import {FocusGroup} from '../shared/FocusGroup/FocusGroup';
-import {StatusView} from '../shared/StatusView/StatusView';
-import {StoryCard} from '../shared/StoryCard/StoryCard';
-import {STORY_CARD_WIDTH} from '../shared/StoryCard/StoryCard.styles';
-import {makeStyles} from './CategoryRow.styles';
-import {CategoryRowProps} from './CategoryRow.types';
+import React, { useCallback } from 'react';
+import { FlatList, Text, View } from 'react-native';
+import { fetchStoriesByTag } from '../../api/devto';
+import { useCenteredRail } from '../../hooks/useCenteredRail/useCenteredRail';
+import { useLoad } from '../../hooks/useLoad/useLoad';
+import { useLanguage } from '../../i18n/language';
+import { useStyles, useTheme } from '../../theme/theme';
+import { Story } from '../../types/story';
+import { FocusGroup } from '../shared/FocusGroup/FocusGroup';
+import { StatusView } from '../shared/StatusView/StatusView';
+import { StoryCard } from '../shared/StoryCard/StoryCard';
+import { STORY_CARD_WIDTH } from '../shared/StoryCard/StoryCard.styles';
+import { makeStyles } from './CategoryRow.styles';
+import { CategoryRowProps } from './CategoryRow.types';
 
 const keyOf = (story: Story) => String(story.id);
 
@@ -25,7 +25,7 @@ export function CategoryRow({
   const language = useLanguage();
   const label = category.label[language];
 
-  const {listRef, onLayout, centerOn} = useCenteredRail<Story>({
+  const { listRef, onLayout, centerOn } = useCenteredRail<Story>({
     itemWidth: theme.scale(STORY_CARD_WIDTH),
     gap: theme.spacing.lg,
     paddingStart: theme.safeArea.horizontal,
@@ -35,7 +35,7 @@ export function CategoryRow({
     () => fetchStoriesByTag(category.tag),
     [category.tag],
   );
-  const {state, reload} = useLoad(load);
+  const { state, reload } = useLoad(load);
 
   const renderBody = () => {
     switch (state.status) {
@@ -84,7 +84,7 @@ export function CategoryRow({
             horizontal
             data={state.data}
             keyExtractor={keyOf}
-            renderItem={({item, index}) => (
+            renderItem={({ item, index }) => (
               <StoryCard
                 story={item}
                 onPress={onPressStory}

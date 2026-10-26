@@ -28,6 +28,7 @@ There is no Samsung Tizen and no Apple TV target, so there is no `ios/` folder.
 | Build, package, install and launch on LG TV | `npm run webos` |
 | Debug on LG TV (Chrome DevTools) | `npm run webos:debug` |
 | Type check / tests / lint | `npm run typecheck` / `npm test` / `npm run lint` |
+| Format code (project Prettier style, e.g. `import { View }` with spaces) | `npx prettier --write "src/**/*.{ts,tsx}"` |
 
 **LG TV setup (once per TV):** install the Developer Mode app on the TV and turn it on, then run `ares-setup-device` (name `tv`, port 9922, user `prisoner`) and `ares-novacom --device tv --getkey`.
 
@@ -49,17 +50,17 @@ src/
         Tab/             Tab.tsx + Tab.styles.ts + Tab.types.ts
     SearchKeyboard/components/Key/
     SavedList/components/SavedItem/
-    shared/              Components used by 2+ screens: StoryCard/, FocusableButton/, StatusView/, ErrorBoundary/
+    shared/              Components used by 2+ screens: StoryCard/, FocusableButton/, StatusView/, ErrorBoundary/, FocusGroup/, MainLayout/ (menu bar + screen content; its NavBar lives in MainLayout/components/NavBar/)
   theme/theme.ts   Root design values for the whole app: colors, spacing, safeArea (overscan margins: keep important content inside), radius, fontSize, lineHeight, focus, isRTL
   types/           Types shared across the app: story.ts (Story, Article, LoadState), language.ts (Language, LanguageContextValue), api.ts (ApiErrorKind), devto.ts (raw API), navigation.ts, assets.d.ts (.woff2)
   hooks/           Shared hooks, one folder each (useLoad/useLoad.ts, useCenteredRail/useCenteredRail.ts + .types.ts, ...): useLoad (runs a fetch, returns LoadState + reload; pass it a stable function, e.g. from useCallback), useCenteredRail (center-locked horizontal rows)
   i18n/            Current language (language.ts: LanguageContext, useLanguage, useSetLanguage), formatShortDate (formatDate.ts) and, later, translations
   api/             Home/Category tag list (categories.ts: webdev, javascript, python, ai, career), dev.to client (devto.ts), store of every story loaded so far (storyStore.ts: getStory, getAllStories; filled by devto.ts), custom search over that store (search.ts)
-  platform/        Everything that differs between Android and webOS, one folder per module: back/back.ts + back.web.ts, focusGuide/, fonts/, smoothScroll/ (scrollListTo / scrollViewTo: native smooth scroll on Android, our 180 ms ease-out animation on webOS because the browser smooth scroll takes ~300 ms and feels laggy), spatialNavigation/, textDirection/
+  platform/        Everything that differs between Android and webOS, one folder per module: back/back.ts + back.web.ts, focusGuide/, fonts/, preferredFocus/ (on webOS marks `hasTVPreferredFocus` items with `data-preferred-focus` so the engine focuses them when a screen opens), smoothScroll/ (scrollListTo / scrollViewTo: native smooth scroll on Android, our 180 ms ease-out animation on webOS because the browser smooth scroll takes ~300 ms and feels laggy), spatialNavigation/, textDirection/
 webos/             appinfo.json and icons, copied into dist/ on build
 ```
 
-**Component-based structure.** Screens in `src/screens/<Name>Screen/` only arrange components and import them from `../../components/<Name>/<Name>`; a screen folder holds the screen and its own files (e.g. `HomeScreen.styles.ts`). Every component is a folder in `src/components/` with `Name.tsx` (named export), `Name.styles.ts` and `Name.types.ts`. There are no `index.ts` files: always import the file itself, never a folder. A component's sub-components go in a `components/` folder inside it, at any depth (e.g. `SearchKeyboard/components/Key/`), and only that parent imports them. Components used by more than one screen go in `src/components/shared/`.
+**Component-based structure.** Screens in `src/screens/<Name>Screen/` only arrange components and import them from `../../components/<Name>/<Name>`; a screen folder holds the screen and its own files (e.g. `HomeScreen.styles.ts`). Every component is a folder in `src/components/` with `Name.tsx` (named export), `Name.styles.ts` and `Name.types.ts`. There are no `index.ts` files: always import the file itself, never a folder. A component's sub-components go in a `components/` folder inside it, at any depth (e.g. `SearchKeyboard/components/Key/`), and only that parent imports them. Components used by more than one screen go in `src/components/shared/`. Every main screen (Home, Category, Search, Saved, Settings) wraps its content in `MainLayout current="..."` so the menu bar is always reachable, in every state; Article stays full screen. Menu navigation: from Home it pushes the section, between sections it replaces, and Home pops back, so Back from any section returns to Home and then to the exit dialog.
 
 **Types.** Types used in more than one place go in `src/types/`. Each component's own props go in `Name.types.ts` in its folder (shared components too), and the same for hooks (e.g. `hooks/useCenteredRail/useCenteredRail.types.ts`), written as an `interface` (e.g. `export interface FocusableButtonProps`); `Name.tsx` imports it. Components use the app's `Story`/`Article` types, never the raw `DevtoArticle`; only `api/devto.ts` touches that.
 

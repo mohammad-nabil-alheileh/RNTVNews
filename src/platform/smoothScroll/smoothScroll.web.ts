@@ -1,4 +1,4 @@
-import {FlatList, ScrollView} from 'react-native';
+import { FlatList, ScrollView } from 'react-native';
 
 const DURATION_MS = 180;
 
@@ -39,7 +39,7 @@ function animate(node: HTMLElement, prop: ScrollProp, target: number) {
   running.set(node, requestAnimationFrame(step));
 }
 
-function domNode(ref: {getScrollableNode(): unknown} | null) {
+function domNode(ref: { getScrollableNode(): unknown } | null) {
   return (ref?.getScrollableNode() as HTMLElement | null | undefined) ?? null;
 }
 

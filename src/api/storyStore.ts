@@ -1,4 +1,4 @@
-import {Story} from '../types/story';
+import { Story } from '../types/story';
 
 const stories = new Map<number, Story>();
 

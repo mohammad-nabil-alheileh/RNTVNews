@@ -1,9 +1,9 @@
-import {StyleSheet} from 'react-native';
-import {Theme} from '../../theme/theme';
-import {storyCardHeight} from '../shared/StoryCard/StoryCard.styles';
+import { StyleSheet } from 'react-native';
+import { Theme } from '../../theme/theme';
+import { storyCardHeight } from '../shared/StoryCard/StoryCard.styles';
 
 export const makeStyles = (theme: Theme) => {
-  const {colors, fontFamily, fontSize, lineHeight, safeArea, spacing} = theme;
+  const { colors, fontFamily, fontSize, lineHeight, safeArea, spacing } = theme;
   const focusRoom = spacing.lg;
 
   return StyleSheet.create({

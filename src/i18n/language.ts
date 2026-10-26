@@ -1,5 +1,5 @@
-import {createContext, useContext} from 'react';
-import {Language, LanguageContextValue} from '../types/language';
+import { createContext, useContext } from 'react';
+import { Language, LanguageContextValue } from '../types/language';
 
 export const LanguageContext = createContext<LanguageContextValue>({
   language: 'en',

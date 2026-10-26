@@ -1,7 +1,7 @@
-import {useCallback, useRef} from 'react';
-import {LayoutChangeEvent, ScrollView} from 'react-native';
-import {scrollViewTo} from '../../platform/smoothScroll/smoothScroll';
-import {SectionLayout} from './useCenteredScroll.types';
+import { useCallback, useRef } from 'react';
+import { LayoutChangeEvent, ScrollView } from 'react-native';
+import { scrollViewTo } from '../../platform/smoothScroll/smoothScroll';
+import { SectionLayout } from './useCenteredScroll.types';
 
 export function useCenteredScroll() {
   const scrollRef = useRef<ScrollView>(null);
@@ -14,8 +14,8 @@ export function useCenteredScroll() {
 
   const sectionLayout = useCallback(
     (key: string) => (event: LayoutChangeEvent) => {
-      const {y, height} = event.nativeEvent.layout;
-      sections.current.set(key, {y, height});
+      const { y, height } = event.nativeEvent.layout;
+      sections.current.set(key, { y, height });
     },
     [],
   );
@@ -30,5 +30,5 @@ export function useCenteredScroll() {
     scrollViewTo(scrollRef.current, offset);
   }, []);
 
-  return {scrollRef, onLayout, sectionLayout, centerOn};
+  return { scrollRef, onLayout, sectionLayout, centerOn };
 }

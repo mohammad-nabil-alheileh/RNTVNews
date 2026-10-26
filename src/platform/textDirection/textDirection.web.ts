@@ -1,1 +1,1 @@
-export const autoDirection: object = {dir: 'auto'};
+export const autoDirection: object = { dir: 'auto' };

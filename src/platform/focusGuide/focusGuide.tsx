@@ -1,8 +1,13 @@
 import React from 'react';
-import {TVFocusGuideView} from 'react-native';
-import {FocusGroupProps} from '../../components/shared/FocusGroup/FocusGroup.types';
+import { TVFocusGuideView } from 'react-native';
+import { FocusGroupProps } from '../../components/shared/FocusGroup/FocusGroup.types';
 
-export function FocusGuide({children, remember, trap = [], style}: FocusGroupProps) {
+export function FocusGuide({
+  children,
+  remember,
+  trap = [],
+  style,
+}: FocusGroupProps) {
   return (
     <TVFocusGuideView
       autoFocus={remember}
@@ -10,7 +15,8 @@ export function FocusGuide({children, remember, trap = [], style}: FocusGroupPro
       trapFocusRight={trap.includes('right')}
       trapFocusUp={trap.includes('up')}
       trapFocusDown={trap.includes('down')}
-      style={style}>
+      style={style}
+    >
       {children}
     </TVFocusGuideView>
   );

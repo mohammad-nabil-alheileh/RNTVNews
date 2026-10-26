@@ -1,5 +1,5 @@
-import {StyleSheet} from 'react-native';
-import {Theme} from '../../../theme/theme';
+import { StyleSheet } from 'react-native';
+import { Theme } from '../../../theme/theme';
 
 export const makeStyles = ({
   colors,
@@ -28,7 +28,7 @@ export const makeStyles = ({
     focused: {
       backgroundColor: colors.focus,
       borderColor: colors.focus,
-      transform: [{scale: focus.scale}],
+      transform: [{ scale: focus.scale }],
     },
     disabled: {
       opacity: 0.4,

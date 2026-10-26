@@ -1,8 +1,8 @@
-import {useMemo} from 'react';
-import {Dimensions, PixelRatio} from 'react-native';
-import {useLanguage} from '../i18n/language';
-import {Language} from '../types/language';
-import {fontFamily} from '../platform/fonts/fonts';
+import { useMemo } from 'react';
+import { Dimensions, PixelRatio } from 'react-native';
+import { useLanguage } from '../i18n/language';
+import { Language } from '../types/language';
+import { fontFamily } from '../platform/fonts/fonts';
 
 const DESIGN_WIDTH = 1920;
 const SCREEN_WIDTH = Dimensions.get('window').width;

@@ -1,6 +1,6 @@
-import {ReactNode} from 'react';
-import {StyleProp, ViewStyle} from 'react-native';
-import {FocusDirection} from '../../../types/focus';
+import { ReactNode } from 'react';
+import { StyleProp, ViewStyle } from 'react-native';
+import { FocusDirection } from '../../../types/focus';
 
 export interface FocusGroupProps {
   children: ReactNode;

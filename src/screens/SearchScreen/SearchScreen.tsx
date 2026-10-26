@@ -1,15 +1,19 @@
 import React from 'react';
-import {StatusView} from '../../components/shared/StatusView/StatusView';
-import {ScreenProps} from '../../types/navigation';
+import { MainLayout } from '../../components/shared/MainLayout/MainLayout';
+import { StatusView } from '../../components/shared/StatusView/StatusView';
+import { ScreenProps } from '../../types/navigation';
 
-export function SearchScreen({navigation}: ScreenProps<'Search'>) {
+export function SearchScreen({ navigation }: ScreenProps<'Search'>) {
   return (
-    <StatusView
-      kind="empty"
-      title="Search"
-      actionLabel="Back"
-      onAction={() => navigation.goBack()}
-      hasTVPreferredFocus
-    />
+    <MainLayout current="Search">
+      <StatusView
+        kind="empty"
+        title="Search"
+        message="Coming soon"
+        actionLabel="Back"
+        onAction={() => navigation.goBack()}
+        hasTVPreferredFocus
+      />
+    </MainLayout>
   );
 }

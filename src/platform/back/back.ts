@@ -1,7 +1,10 @@
-import {BackHandler} from 'react-native';
+import { BackHandler } from 'react-native';
 
 export function onBack(handler: () => boolean): () => void {
-  const subscription = BackHandler.addEventListener('hardwareBackPress', handler);
+  const subscription = BackHandler.addEventListener(
+    'hardwareBackPress',
+    handler,
+  );
   return () => subscription.remove();
 }
 

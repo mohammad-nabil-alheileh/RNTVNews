@@ -1,37 +1,37 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   createNavigationContainerRef,
   DarkTheme,
   NavigationContainer,
 } from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {ExitDialog} from './components/ExitDialog/ExitDialog';
-import {ErrorBoundary} from './components/shared/ErrorBoundary/ErrorBoundary';
-import {LanguageContext} from './i18n/language';
-import {exitApp, onBack} from './platform/back/back';
-import {startSpatialNavigation} from './platform/spatialNavigation/spatialNavigation';
-import {useTheme} from './theme/theme';
-import {ScreenLayoutProps} from './App.types';
-import {Language} from './types/language';
-import {RootStackParamList} from './types/navigation';
-import {HomeScreen} from './screens/HomeScreen/HomeScreen';
-import {CategoryScreen} from './screens/CategoryScreen/CategoryScreen';
-import {ArticleScreen} from './screens/ArticleScreen/ArticleScreen';
-import {SearchScreen} from './screens/SearchScreen/SearchScreen';
-import {SavedScreen} from './screens/SavedScreen/SavedScreen';
-import {SettingsScreen} from './screens/SettingsScreen/SettingsScreen';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ExitDialog } from './components/ExitDialog/ExitDialog';
+import { ErrorBoundary } from './components/shared/ErrorBoundary/ErrorBoundary';
+import { LanguageContext } from './i18n/language';
+import { exitApp, onBack } from './platform/back/back';
+import { startSpatialNavigation } from './platform/spatialNavigation/spatialNavigation';
+import { useTheme } from './theme/theme';
+import { ScreenLayoutProps } from './App.types';
+import { Language } from './types/language';
+import { RootStackParamList } from './types/navigation';
+import { HomeScreen } from './screens/HomeScreen/HomeScreen';
+import { CategoryScreen } from './screens/CategoryScreen/CategoryScreen';
+import { ArticleScreen } from './screens/ArticleScreen/ArticleScreen';
+import { SearchScreen } from './screens/SearchScreen/SearchScreen';
+import { SavedScreen } from './screens/SavedScreen/SavedScreen';
+import { SettingsScreen } from './screens/SettingsScreen/SettingsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
 startSpatialNavigation();
 
-function ScreenLayout({children}: ScreenLayoutProps) {
+function ScreenLayout({ children }: ScreenLayoutProps) {
   return <ErrorBoundary>{children}</ErrorBoundary>;
 }
 
 function AppContent() {
-  const {colors} = useTheme();
+  const { colors } = useTheme();
   const [exitVisible, setExitVisible] = useState(false);
 
   const hideExit = useCallback(() => setExitVisible(false), []);
@@ -71,8 +71,9 @@ function AppContent() {
         screenOptions={{
           headerShown: false,
           animation: 'none',
-          contentStyle: {backgroundColor: colors.background},
-        }}>
+          contentStyle: { backgroundColor: colors.background },
+        }}
+      >
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Category" component={CategoryScreen} />
         <Stack.Screen name="Article" component={ArticleScreen} />
@@ -87,7 +88,7 @@ function AppContent() {
 
 export default function App() {
   const [language, setLanguage] = useState<Language>('en');
-  const languageValue = useMemo(() => ({language, setLanguage}), [language]);
+  const languageValue = useMemo(() => ({ language, setLanguage }), [language]);
 
   return (
     <LanguageContext.Provider value={languageValue}>

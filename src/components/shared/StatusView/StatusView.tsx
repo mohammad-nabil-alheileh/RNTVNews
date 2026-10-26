@@ -1,9 +1,9 @@
 import React from 'react';
-import {ActivityIndicator, Text, View} from 'react-native';
-import {useStyles, useTheme} from '../../../theme/theme';
-import {FocusableButton} from '../FocusableButton/FocusableButton';
-import {makeStyles} from './StatusView.styles';
-import {StatusViewProps} from './StatusView.types';
+import { ActivityIndicator, Text, View } from 'react-native';
+import { useStyles, useTheme } from '../../../theme/theme';
+import { FocusableButton } from '../FocusableButton/FocusableButton';
+import { makeStyles } from './StatusView.styles';
+import { StatusViewProps } from './StatusView.types';
 
 export function StatusView({
   kind,
@@ -15,13 +15,11 @@ export function StatusView({
   style,
 }: StatusViewProps) {
   const styles = useStyles(makeStyles);
-  const {colors, scale} = useTheme();
+  const { colors, scale } = useTheme();
   const isProblem = kind === 'error' || kind === 'offline';
 
   return (
-    <View
-      style={[styles.container, style]}
-      accessibilityLiveRegion="polite">
+    <View style={[styles.container, style]} accessibilityLiveRegion="polite">
       {kind === 'loading' && (
         <ActivityIndicator
           size={scale(64)}
@@ -31,7 +29,8 @@ export function StatusView({
       )}
       <Text
         style={[styles.title, isProblem && styles.titleError]}
-        accessibilityRole="header">
+        accessibilityRole="header"
+      >
         {title}
       </Text>
       {message ? <Text style={styles.message}>{message}</Text> : null}

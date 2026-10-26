@@ -1,9 +1,11 @@
 import {useMemo} from 'react';
-import {PixelRatio, useWindowDimensions} from 'react-native';
-import {Language, useLanguage} from '../i18n/language';
+import {Dimensions, PixelRatio} from 'react-native';
+import {useLanguage} from '../i18n/language';
+import {Language} from '../types/language';
 import {fontFamily} from '../platform/fonts/fonts';
 
 const DESIGN_WIDTH = 1920;
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const LINE_HEIGHT_RATIO: Record<Language, number> = {
   en: 1.3,
@@ -25,8 +27,8 @@ export const colors = {
   transparent: 'transparent',
 } as const;
 
-export function createTheme(screenWidth: number, language: Language) {
-  const ratio = screenWidth / DESIGN_WIDTH;
+export function createTheme(language: Language) {
+  const ratio = SCREEN_WIDTH / DESIGN_WIDTH;
   const scale = (designPx: number) =>
     PixelRatio.roundToNearestPixel(designPx * ratio);
 
@@ -83,9 +85,8 @@ export function createTheme(screenWidth: number, language: Language) {
 export type Theme = ReturnType<typeof createTheme>;
 
 export function useTheme(): Theme {
-  const {width} = useWindowDimensions();
   const language = useLanguage();
-  return useMemo(() => createTheme(width, language), [width, language]);
+  return useMemo(() => createTheme(language), [language]);
 }
 
 export function useStyles<T>(makeStyles: (theme: Theme) => T): T {

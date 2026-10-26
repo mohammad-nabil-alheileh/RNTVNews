@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from 'react';
-import {ApiError} from '../api/devto';
-import {LoadState} from '../types/story';
+import {ApiError} from '../../api/devto';
+import {LoadState} from '../../types/story';
 
 export function useLoad<T>(load: () => Promise<T>) {
   const [state, setState] = useState<LoadState<T>>({status: 'loading'});

@@ -1,8 +1,8 @@
 import React, {useCallback} from 'react';
 import {FlatList, Text, View} from 'react-native';
 import {fetchStoriesByTag} from '../../api/devto';
-import {useCenteredRail} from '../../hooks/useCenteredRail';
-import {useLoad} from '../../hooks/useLoad';
+import {useCenteredRail} from '../../hooks/useCenteredRail/useCenteredRail';
+import {useLoad} from '../../hooks/useLoad/useLoad';
 import {useLanguage} from '../../i18n/language';
 import {useStyles, useTheme} from '../../theme/theme';
 import {Story} from '../../types/story';

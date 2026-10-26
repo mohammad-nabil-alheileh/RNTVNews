@@ -1,4 +1,4 @@
-import {Language} from './language';
+import {Language} from '../types/language';
 
 export function formatShortDate(iso: string, language: Language): string {
   return new Intl.DateTimeFormat(language, {

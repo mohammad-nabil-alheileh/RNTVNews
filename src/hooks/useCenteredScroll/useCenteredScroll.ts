@@ -1,11 +1,7 @@
 import {useCallback, useRef} from 'react';
 import {LayoutChangeEvent, ScrollView} from 'react-native';
-import {scrollViewTo} from '../platform/smoothScroll/smoothScroll';
-
-interface SectionLayout {
-  y: number;
-  height: number;
-}
+import {scrollViewTo} from '../../platform/smoothScroll/smoothScroll';
+import {SectionLayout} from './useCenteredScroll.types';
 
 export function useCenteredScroll() {
   const scrollRef = useRef<ScrollView>(null);

@@ -1,3 +1,4 @@
+import {ApiErrorKind} from '../types/api';
 import {DevtoArticle} from '../types/devto';
 import {Article, Story} from '../types/story';
 import {addStories} from './storyStore';
@@ -6,7 +7,6 @@ const BASE_URL = 'https://dev.to/api';
 const PAGE_SIZE = 30;
 const TIMEOUT_MS = 15000;
 
-export type ApiErrorKind = 'offline' | 'error';
 
 export class ApiError extends Error {
   kind: ApiErrorKind;

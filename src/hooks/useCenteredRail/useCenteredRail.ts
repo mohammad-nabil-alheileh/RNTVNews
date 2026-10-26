@@ -1,12 +1,7 @@
 import {useCallback, useRef, useState} from 'react';
 import {FlatList, LayoutChangeEvent} from 'react-native';
-import {scrollListTo} from '../platform/smoothScroll/smoothScroll';
-
-interface RailLayout {
-  itemWidth: number;
-  gap: number;
-  paddingStart: number;
-}
+import {scrollListTo} from '../../platform/smoothScroll/smoothScroll';
+import {RailLayout} from './useCenteredRail.types';
 
 export function useCenteredRail<T>({itemWidth, gap, paddingStart}: RailLayout) {
   const listRef = useRef<FlatList<T>>(null);

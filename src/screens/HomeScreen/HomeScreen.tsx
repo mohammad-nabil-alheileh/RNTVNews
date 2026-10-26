@@ -7,8 +7,8 @@ import {ErrorBoundary} from '../../components/shared/ErrorBoundary/ErrorBoundary
 import {FocusGroup} from '../../components/shared/FocusGroup/FocusGroup';
 import {StatusView} from '../../components/shared/StatusView/StatusView';
 import {TopStory} from '../../components/TopStory/TopStory';
-import {useCenteredScroll} from '../../hooks/useCenteredScroll';
-import {useLoad} from '../../hooks/useLoad';
+import {useCenteredScroll} from '../../hooks/useCenteredScroll/useCenteredScroll';
+import {useLoad} from '../../hooks/useLoad/useLoad';
 import {useLanguage} from '../../i18n/language';
 import {useStyles} from '../../theme/theme';
 import {ScreenProps} from '../../types/navigation';

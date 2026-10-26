@@ -1,11 +1,5 @@
 import {createContext, useContext} from 'react';
-
-export type Language = 'en' | 'ar';
-
-type LanguageContextValue = {
-  language: Language;
-  setLanguage: (language: Language) => void;
-};
+import {Language, LanguageContextValue} from '../types/language';
 
 export const LanguageContext = createContext<LanguageContextValue>({
   language: 'en',

@@ -1,4 +1,4 @@
-import {Language} from '../i18n/language';
+import {Language} from './language';
 
 export interface Category {
   tag: string;

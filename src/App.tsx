@@ -7,10 +7,12 @@ import {
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ExitDialog} from './components/ExitDialog/ExitDialog';
 import {ErrorBoundary} from './components/shared/ErrorBoundary/ErrorBoundary';
-import {Language, LanguageContext} from './i18n/language';
+import {LanguageContext} from './i18n/language';
 import {exitApp, onBack} from './platform/back/back';
 import {startSpatialNavigation} from './platform/spatialNavigation/spatialNavigation';
 import {useTheme} from './theme/theme';
+import {ScreenLayoutProps} from './App.types';
+import {Language} from './types/language';
 import {RootStackParamList} from './types/navigation';
 import {HomeScreen} from './screens/HomeScreen/HomeScreen';
 import {CategoryScreen} from './screens/CategoryScreen/CategoryScreen';
@@ -24,7 +26,7 @@ const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
 startSpatialNavigation();
 
-function ScreenLayout({children}: {children: React.ReactElement}) {
+function ScreenLayout({children}: ScreenLayoutProps) {
   return <ErrorBoundary>{children}</ErrorBoundary>;
 }
 

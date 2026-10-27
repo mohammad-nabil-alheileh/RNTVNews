@@ -1,6 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
-import { useStyles, useTheme } from '../../../theme/theme';
+import { useStyles } from '../../../hooks/useStyles/useStyles';
+import { useTheme } from '../../../hooks/useTheme/useTheme';
 import { FocusableButton } from '../FocusableButton/FocusableButton';
 import { makeStyles } from './StatusView.styles';
 import { StatusViewProps } from './StatusView.types';

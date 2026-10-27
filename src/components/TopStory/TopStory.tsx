@@ -1,12 +1,21 @@
 import React, { useMemo, useState } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
-import { formatShortDate } from '../../i18n/formatDate';
-import { useLanguage } from '../../i18n/language';
+import { sizedImageUrl } from '../../utils/sizedImageUrl/sizedImageUrl';
+import { formatShortDate } from '../../utils/formatShortDate/formatShortDate';
+import { useLanguage } from '../../hooks/useLanguage/useLanguage';
 import { autoDirection } from '../../platform/textDirection/textDirection';
 import { preferredFocusProps } from '../../platform/preferredFocus/preferredFocus';
-import { useStyles } from '../../theme/theme';
-import { DESCRIPTION_LINES, makeStyles, TITLE_LINES } from './TopStory.styles';
+import { useStyles } from '../../hooks/useStyles/useStyles';
+import { useTheme } from '../../hooks/useTheme/useTheme';
+import {
+  DESCRIPTION_LINES,
+  makeStyles,
+  TITLE_LINES,
+  TOP_STORY_HEIGHT,
+  TOP_STORY_WIDTH,
+} from './TopStory.styles';
 import { TopStoryProps } from './TopStory.types';
+import { useTranslation } from '../../hooks/useTranslation/useTranslation';
 
 export function TopStory({
   story,
@@ -14,7 +23,9 @@ export function TopStory({
   onFocus,
   hasTVPreferredFocus,
 }: TopStoryProps) {
+  const t = useTranslation();
   const styles = useStyles(makeStyles);
+  const theme = useTheme();
   const language = useLanguage();
   const [focused, setFocused] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
@@ -39,19 +50,27 @@ export function TopStory({
       {...preferredFocusProps(hasTVPreferredFocus)}
       accessible
       accessibilityRole="button"
-      accessibilityLabel={`Top story: ${story.title}, ${meta}`}
+      accessibilityLabel={t('topStoryLabel', { title: story.title, meta })}
       style={[styles.container, focused && styles.focused]}
     >
       {showImage && (
         <Image
-          source={{ uri: story.imageUrl! }}
+          source={{
+            uri: sizedImageUrl(
+              story.imageUrl!,
+              theme.scale(TOP_STORY_WIDTH),
+              theme.scale(TOP_STORY_HEIGHT),
+            ),
+          }}
           resizeMode="cover"
+          resizeMethod="resize"
+          fadeDuration={0}
           onError={() => setImageFailed(true)}
           style={styles.image}
         />
       )}
       <View style={styles.panel}>
-        <Text style={styles.label}>Top story</Text>
+        <Text style={styles.label}>{t('topStory')}</Text>
         <Text
           {...autoDirection}
           numberOfLines={TITLE_LINES}

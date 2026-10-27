@@ -6,13 +6,16 @@ import {
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ExitDialog } from './components/ExitDialog/ExitDialog';
-import { ErrorBoundary } from './components/shared/ErrorBoundary/ErrorBoundary';
-import { LanguageContext } from './i18n/language';
+import { ScreenFrame } from './components/shared/ScreenFrame/ScreenFrame';
 import { exitApp, onBack } from './platform/back/back';
+import { CATEGORIES } from './api/categories';
+import { loadListCache } from './api/listCache';
+import { loadSaved } from './api/savedStore';
+import { loadSettings } from './api/settingsStore';
+import { useSettings } from './hooks/useSettings/useSettings';
 import { startSpatialNavigation } from './platform/spatialNavigation/spatialNavigation';
-import { useTheme } from './theme/theme';
+import { useTheme } from './hooks/useTheme/useTheme';
 import { ScreenLayoutProps } from './App.types';
-import { Language } from './types/language';
 import { RootStackParamList } from './types/navigation';
 import { HomeScreen } from './screens/HomeScreen/HomeScreen';
 import { CategoryScreen } from './screens/CategoryScreen/CategoryScreen';
@@ -20,14 +23,18 @@ import { ArticleScreen } from './screens/ArticleScreen/ArticleScreen';
 import { SearchScreen } from './screens/SearchScreen/SearchScreen';
 import { SavedScreen } from './screens/SavedScreen/SavedScreen';
 import { SettingsScreen } from './screens/SettingsScreen/SettingsScreen';
+import { AboutScreen } from './screens/AboutScreen/AboutScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
 startSpatialNavigation();
+loadSettings();
+loadSaved();
+loadListCache(['top', ...CATEGORIES.map(category => category.tag)]);
 
 function ScreenLayout({ children }: ScreenLayoutProps) {
-  return <ErrorBoundary>{children}</ErrorBoundary>;
+  return <ScreenFrame>{children}</ScreenFrame>;
 }
 
 function AppContent() {
@@ -80,6 +87,7 @@ function AppContent() {
         <Stack.Screen name="Search" component={SearchScreen} />
         <Stack.Screen name="Saved" component={SavedScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen name="About" component={AboutScreen} />
       </Stack.Navigator>
       <ExitDialog visible={exitVisible} onStay={hideExit} onExit={exitApp} />
     </NavigationContainer>
@@ -87,12 +95,6 @@ function AppContent() {
 }
 
 export default function App() {
-  const [language, setLanguage] = useState<Language>('en');
-  const languageValue = useMemo(() => ({ language, setLanguage }), [language]);
-
-  return (
-    <LanguageContext.Provider value={languageValue}>
-      <AppContent />
-    </LanguageContext.Provider>
-  );
+  const { loaded } = useSettings();
+  return loaded ? <AppContent /> : null;
 }

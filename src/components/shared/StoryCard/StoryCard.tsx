@@ -1,10 +1,12 @@
-import React, { useMemo, useState } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
-import { formatShortDate } from '../../../i18n/formatDate';
-import { useLanguage } from '../../../i18n/language';
+import { sizedImageUrl } from '../../../utils/sizedImageUrl/sizedImageUrl';
+import { formatShortDate } from '../../../utils/formatShortDate/formatShortDate';
+import { useLanguage } from '../../../hooks/useLanguage/useLanguage';
 import { autoDirection } from '../../../platform/textDirection/textDirection';
 import { preferredFocusProps } from '../../../platform/preferredFocus/preferredFocus';
-import { useStyles, useTheme } from '../../../theme/theme';
+import { useStyles } from '../../../hooks/useStyles/useStyles';
+import { useTheme } from '../../../hooks/useTheme/useTheme';
 import {
   makeStyles,
   STORY_CARD_WIDTH,
@@ -13,12 +15,13 @@ import {
 } from './StoryCard.styles';
 import { StoryCardProps } from './StoryCard.types';
 
-export function StoryCard({
+function StoryCardView({
   story,
   onPress,
   onFocus,
   hasTVPreferredFocus,
   width = STORY_CARD_WIDTH,
+  ref,
 }: StoryCardProps) {
   const styles = useStyles(makeStyles);
   const theme = useTheme();
@@ -39,6 +42,7 @@ export function StoryCard({
 
   return (
     <Pressable
+      ref={ref}
       onPress={() => onPress(story)}
       onFocus={() => {
         setFocused(true);
@@ -55,8 +59,12 @@ export function StoryCard({
       <View style={[styles.image, { height: imageHeight }]}>
         {showImage && (
           <Image
-            source={{ uri: story.imageUrl! }}
+            source={{
+              uri: sizedImageUrl(story.imageUrl!, cardWidth, imageHeight),
+            }}
             resizeMode="cover"
+            resizeMethod="resize"
+            fadeDuration={0}
             onError={() => setImageFailed(true)}
             style={{ width: cardWidth, height: imageHeight }}
           />
@@ -77,3 +85,5 @@ export function StoryCard({
     </Pressable>
   );
 }
+
+export const StoryCard = memo(StoryCardView);

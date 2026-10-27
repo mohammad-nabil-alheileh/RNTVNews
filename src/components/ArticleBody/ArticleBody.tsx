@@ -1,12 +1,16 @@
 import React, { useCallback, useMemo } from 'react';
 import { FlatList, ListRenderItem } from 'react-native';
 import { useCenteredList } from '../../hooks/useCenteredList/useCenteredList';
-import { useStyles, useTheme } from '../../theme/theme';
+import { useStyles } from '../../hooks/useStyles/useStyles';
+import { useTheme } from '../../hooks/useTheme/useTheme';
+import { MeasuredCell } from '../shared/MeasuredCell/MeasuredCell';
+import { MeasuredCellContext } from '../shared/MeasuredCell/MeasuredCell.context';
 import { FocusGroup } from '../shared/FocusGroup/FocusGroup';
 import { StatusView } from '../shared/StatusView/StatusView';
 import { bodyContentWidth, makeStyles } from './ArticleBody.styles';
 import { ArticleBodyItem, ArticleBodyProps } from './ArticleBody.types';
 import { BodyItem } from './components/BodyItem/BodyItem';
+import { useTranslation } from '../../hooks/useTranslation/useTranslation';
 
 const keyOf = (item: ArticleBodyItem, index: number) =>
   item.type === 'header' ? 'header' : `block-${index}`;
@@ -17,10 +21,11 @@ export function ArticleBody({
   onRetry,
   onBack,
 }: ArticleBodyProps) {
+  const t = useTranslation();
   const styles = useStyles(makeStyles);
   const theme = useTheme();
   const width = bodyContentWidth(theme);
-  const { listRef, onLayout, Cell, centerOn } =
+  const { listRef, onLayout, recordCell, centerOn } =
     useCenteredList<ArticleBodyItem>();
 
   const items = useMemo<ArticleBodyItem[]>(() => {
@@ -53,8 +58,8 @@ export function ArticleBody({
         return (
           <StatusView
             kind="loading"
-            title="Loading article…"
-            actionLabel="Back"
+            title={t('loadingArticle')}
+            actionLabel={t('back')}
             onAction={onBack}
             hasTVPreferredFocus={preferred}
             style={styles.status}
@@ -64,9 +69,9 @@ export function ArticleBody({
         return (
           <StatusView
             kind="offline"
-            title="No connection"
-            message="Check your network and try again."
-            actionLabel="Retry"
+            title={t('noConnection')}
+            message={t('checkNetwork')}
+            actionLabel={t('retry')}
             onAction={onRetry}
             hasTVPreferredFocus={preferred}
             style={styles.status}
@@ -76,9 +81,9 @@ export function ArticleBody({
         return (
           <StatusView
             kind="error"
-            title="Couldn't load this story"
+            title={t('couldntLoadStory')}
             message={state.error}
-            actionLabel="Retry"
+            actionLabel={t('retry')}
             onAction={onRetry}
             hasTVPreferredFocus={preferred}
             style={styles.status}
@@ -91,8 +96,8 @@ export function ArticleBody({
         return (
           <StatusView
             kind="empty"
-            title="This story has no text"
-            actionLabel="Back"
+            title={t('storyHasNoText')}
+            actionLabel={t('back')}
             onAction={onBack}
             style={styles.status}
           />
@@ -102,21 +107,23 @@ export function ArticleBody({
 
   return (
     <FocusGroup remember trap={['right', 'up', 'down']} style={styles.group}>
-      <FlatList
-        ref={listRef}
-        onLayout={onLayout}
-        data={items}
-        keyExtractor={keyOf}
-        renderItem={renderItem}
-        CellRendererComponent={Cell}
-        ListFooterComponent={renderStatus()}
-        initialNumToRender={6}
-        maxToRenderPerBatch={4}
-        windowSize={5}
-        showsVerticalScrollIndicator={false}
-        style={styles.list}
-        contentContainerStyle={styles.content}
-      />
+      <MeasuredCellContext.Provider value={recordCell}>
+        <FlatList
+          ref={listRef}
+          onLayout={onLayout}
+          data={items}
+          keyExtractor={keyOf}
+          renderItem={renderItem}
+          CellRendererComponent={MeasuredCell}
+          ListFooterComponent={renderStatus()}
+          initialNumToRender={6}
+          maxToRenderPerBatch={4}
+          windowSize={5}
+          showsVerticalScrollIndicator={false}
+          style={styles.list}
+          contentContainerStyle={styles.content}
+        />
+      </MeasuredCellContext.Provider>
     </FocusGroup>
   );
 }

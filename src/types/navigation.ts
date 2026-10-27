@@ -7,6 +7,7 @@ export type RootStackParamList = {
   Search: undefined;
   Saved: undefined;
   Settings: undefined;
+  About: undefined;
 };
 
 export type ScreenProps<Name extends keyof RootStackParamList> =

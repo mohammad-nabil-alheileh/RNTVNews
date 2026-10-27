@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Image, Text, View } from 'react-native';
-import { sizedImageUrl } from '../../../../../../api/devtoImage';
+import { sizedImageUrl } from '../../../../../../utils/sizedImageUrl/sizedImageUrl';
 import { autoDirection } from '../../../../../../platform/textDirection/textDirection';
-import { useStyles } from '../../../../../../theme/theme';
+import { useStyles } from '../../../../../../hooks/useStyles/useStyles';
 import { COVER_RATIO, makeStyles } from './ArticleHeader.styles';
 import { ArticleHeaderProps } from './ArticleHeader.types';
+import { useTranslation } from '../../../../../../hooks/useTranslation/useTranslation';
 
 export function ArticleHeader({ story, date, width }: ArticleHeaderProps) {
+  const t = useTranslation();
   const styles = useStyles(makeStyles);
   const [imageFailed, setImageFailed] = useState(false);
   const coverHeight = Math.round(width / COVER_RATIO);
@@ -17,7 +19,9 @@ export function ArticleHeader({ story, date, width }: ArticleHeaderProps) {
         {story.title}
       </Text>
       <Text {...autoDirection} style={styles.meta}>
-        {`${story.author} · ${date} · ${story.readingMinutes} min read`}
+        {`${story.author} · ${date} · ${t('minRead', {
+          minutes: story.readingMinutes,
+        })}`}
       </Text>
       {story.imageUrl !== null && (
         <View style={[styles.cover, { width, height: coverHeight }]}>

@@ -2,10 +2,11 @@ import { ApiErrorKind } from '../types/api';
 import { DevtoArticle } from '../types/devto';
 import { Article, Story } from '../types/story';
 import { addStories } from './storyStore';
-import { parseArticleBody } from './articleBody';
+import { parseArticleBody } from '../utils/parseArticleBody/parseArticleBody';
 
 const BASE_URL = 'https://dev.to/api';
 const PAGE_SIZE = 30;
+const LATEST_PAGE_SIZE = 100;
 const TIMEOUT_MS = 15000;
 
 export class ApiError extends Error {
@@ -79,6 +80,10 @@ export function fetchStoriesByTag(tag: string): Promise<Story[]> {
   return fetchStoryList(
     `/articles?tag=${encodeURIComponent(tag)}&per_page=${PAGE_SIZE}`,
   );
+}
+
+export function fetchLatestStories(): Promise<Story[]> {
+  return fetchStoryList(`/articles/latest?per_page=${LATEST_PAGE_SIZE}`);
 }
 
 export async function fetchArticle(id: number): Promise<Article> {

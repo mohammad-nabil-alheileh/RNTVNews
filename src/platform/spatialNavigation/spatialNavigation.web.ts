@@ -27,6 +27,7 @@ const SCROLL_FALLBACK_DELAY_MS = 250;
 const lastFocusedInGroup = new WeakMap<Element, HTMLElement>();
 const focusHistory: HTMLElement[] = [];
 let lastMoveAt = 0;
+let newlyPreferred: HTMLElement | null = null;
 let started = false;
 
 function isVisible(element: HTMLElement): boolean {
@@ -124,22 +125,34 @@ function score(
   return primary + cross * 2 + alignment * 0.01;
 }
 
+function entryOf(group: HTMLElement): HTMLElement | null {
+  const entry = group.querySelector<HTMLElement>(
+    `[data-focus-entry="${group.dataset.focusGroup}"]`,
+  );
+  return entry && isVisible(entry) ? entry : null;
+}
+
 function rememberedTarget(
   target: HTMLElement,
   current: HTMLElement,
 ): HTMLElement {
   const entered = groupsOf(target).filter(
-    group => !group.contains(current) && group.dataset.focusRemember === 'true',
+    group =>
+      !group.contains(current) &&
+      (group.dataset.focusRemember === 'true' || entryOf(group) !== null),
   );
   const outermost = entered[entered.length - 1];
   if (!outermost) {
     return target;
   }
-  const remembered = lastFocusedInGroup.get(outermost);
-  if (remembered && outermost.contains(remembered) && isVisible(remembered)) {
-    return remembered;
+  if (outermost.dataset.focusRemember === 'true') {
+    const remembered = lastFocusedInGroup.get(outermost);
+    if (remembered && outermost.contains(remembered) && isVisible(remembered)) {
+      return remembered;
+    }
+    return entryOf(outermost) ?? focusablesIn(outermost)[0] ?? target;
   }
-  return focusablesIn(outermost)[0] ?? target;
+  return entryOf(outermost) ?? target;
 }
 
 function isOnScreen(element: HTMLElement): boolean {
@@ -247,6 +260,7 @@ function restoreTarget(root: ParentNode): HTMLElement | undefined {
 
 function onFocusIn(event: FocusEvent) {
   const target = event.target as HTMLElement;
+  newlyPreferred = null;
   for (const group of groupsOf(target)) {
     lastFocusedInGroup.set(group, target);
   }
@@ -263,7 +277,15 @@ function recoverLostFocus() {
     !root.contains(active) ||
     !isVisible(active);
   if (lost) {
-    const target = restoreTarget(root);
+    const fresh =
+      newlyPreferred &&
+      newlyPreferred.isConnected &&
+      root.contains(newlyPreferred) &&
+      isVisible(newlyPreferred)
+        ? newlyPreferred
+        : undefined;
+    newlyPreferred = null;
+    const target = fresh ?? restoreTarget(root);
     if (target) {
       focus(target);
     }
@@ -280,7 +302,13 @@ export function startSpatialNavigation(): void {
   document.addEventListener('focusin', onFocusIn);
 
   let scheduled = false;
-  new MutationObserver(() => {
+  new MutationObserver(records => {
+    for (const record of records) {
+      const target = record.target as HTMLElement;
+      if (record.type === 'attributes' && target.matches(PREFERRED)) {
+        newlyPreferred = target;
+      }
+    }
     if (scheduled) {
       return;
     }
@@ -289,5 +317,10 @@ export function startSpatialNavigation(): void {
       scheduled = false;
       recoverLostFocus();
     });
-  }).observe(document.body, { childList: true, subtree: true });
+  }).observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['data-preferred-focus'],
+  });
 }

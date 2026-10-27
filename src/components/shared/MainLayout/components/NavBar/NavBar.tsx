@@ -1,32 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { View } from 'react-native';
 import {
   CommonActions,
   StackActions,
   useNavigation,
 } from '@react-navigation/native';
-import { useLanguage } from '../../../../../i18n/language';
-import { useStyles } from '../../../../../theme/theme';
+import { useStyles } from '../../../../../hooks/useStyles/useStyles';
 import { FocusableButton } from '../../../FocusableButton/FocusableButton';
 import { FocusGroup } from '../../../FocusGroup/FocusGroup';
 import { MainSection } from '../../MainLayout.types';
 import { makeStyles } from './NavBar.styles';
 import { NavBarProps, NavItem } from './NavBar.types';
+import { useTranslation } from '../../../../../hooks/useTranslation/useTranslation';
 
 const NAV_ITEMS: NavItem[] = [
-  { section: 'Home', label: { en: 'Home', ar: 'الرئيسية' } },
-  { section: 'Category', label: { en: 'Categories', ar: 'الأقسام' } },
-  { section: 'Search', label: { en: 'Search', ar: 'بحث' } },
-  { section: 'Saved', label: { en: 'Saved', ar: 'المحفوظات' } },
-  { section: 'Settings', label: { en: 'Settings', ar: 'الإعدادات' } },
+  { section: 'Home', labelKey: 'navHome' },
+  { section: 'Category', labelKey: 'navCategories' },
+  { section: 'Search', labelKey: 'navSearch' },
+  { section: 'Saved', labelKey: 'navSaved' },
+  { section: 'Settings', labelKey: 'navSettings' },
 ];
 
 const paramsOf = (section: MainSection) =>
   section === 'Category' ? {} : undefined;
 
 export function NavBar({ current }: NavBarProps) {
+  const t = useTranslation();
   const styles = useStyles(makeStyles);
-  const language = useLanguage();
   const navigation = useNavigation();
+  const [homeButton, setHomeButton] = useState<View | null>(null);
 
   const open = (section: MainSection) => {
     if (section === current) {
@@ -42,11 +44,12 @@ export function NavBar({ current }: NavBarProps) {
   };
 
   return (
-    <FocusGroup remember trap={['left', 'right']} style={styles.bar}>
+    <FocusGroup trap={['left', 'right']} entry={homeButton} style={styles.bar}>
       {NAV_ITEMS.map(item => (
         <FocusableButton
           key={item.section}
-          label={item.label[language]}
+          ref={item.section === 'Home' ? setHomeButton : undefined}
+          label={t(item.labelKey)}
           selected={item.section === current}
           onPress={() => open(item.section)}
         />

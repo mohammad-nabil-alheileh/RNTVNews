@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { Pressable, Text } from 'react-native';
 import { preferredFocusProps } from '../../../platform/preferredFocus/preferredFocus';
-import { useStyles } from '../../../theme/theme';
+import { useStyles } from '../../../hooks/useStyles/useStyles';
 import { makeStyles } from './FocusableButton.styles';
 import { FocusableButtonProps } from './FocusableButton.types';
 
 export function FocusableButton({
   label,
   onPress,
+  onFocus,
+  onBlur,
+  ref,
   hasTVPreferredFocus,
   selected = false,
   disabled = false,
@@ -18,9 +21,16 @@ export function FocusableButton({
 
   return (
     <Pressable
+      ref={ref}
       onPress={onPress}
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
+      onFocus={() => {
+        setFocused(true);
+        onFocus?.();
+      }}
+      onBlur={() => {
+        setFocused(false);
+        onBlur?.();
+      }}
       hasTVPreferredFocus={hasTVPreferredFocus}
       {...preferredFocusProps(hasTVPreferredFocus)}
       disabled={disabled}

@@ -1,7 +1,8 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { CATEGORIES } from '../../api/categories';
-import { fetchTopStories } from '../../api/devto';
+import { fetchStoriesByTag, fetchTopStories } from '../../api/devto';
+import { prefetchLists } from '../../api/listCache';
 import { CategoryRow } from '../../components/CategoryRow/CategoryRow';
 import { ErrorBoundary } from '../../components/shared/ErrorBoundary/ErrorBoundary';
 import { FocusGroup } from '../../components/shared/FocusGroup/FocusGroup';
@@ -9,20 +10,35 @@ import { MainLayout } from '../../components/shared/MainLayout/MainLayout';
 import { StatusView } from '../../components/shared/StatusView/StatusView';
 import { TopStory } from '../../components/TopStory/TopStory';
 import { useCenteredScroll } from '../../hooks/useCenteredScroll/useCenteredScroll';
-import { useLoad } from '../../hooks/useLoad/useLoad';
-import { useLanguage } from '../../i18n/language';
-import { useStyles } from '../../theme/theme';
+import { useCachedList } from '../../hooks/useCachedList/useCachedList';
+import { useListCacheReady } from '../../hooks/useListCacheReady/useListCacheReady';
+import { useLanguage } from '../../hooks/useLanguage/useLanguage';
+import { useStyles } from '../../hooks/useStyles/useStyles';
 import { ScreenProps } from '../../types/navigation';
 import { Story } from '../../types/story';
 import { makeStyles } from './HomeScreen.styles';
+import { useTranslation } from '../../hooks/useTranslation/useTranslation';
 
 const TOP_SECTION = 'top';
+const ROWS_AHEAD = 3;
+const ROW_ACTIVATION_INTERVAL_MS = 120;
 
 export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
+  const t = useTranslation();
   const styles = useStyles(makeStyles);
   const language = useLanguage();
-  const { state, reload } = useLoad(fetchTopStories);
+  const ready = useListCacheReady();
+  const { state, reload } = useCachedList('top', fetchTopStories);
   const { scrollRef, onLayout, sectionLayout, centerOn } = useCenteredScroll();
+  const [activeRows, setActiveRows] = useState(ROWS_AHEAD + 1);
+
+  const focusRow = useCallback(
+    (tag: string, index: number) => {
+      centerOn(tag);
+      setActiveRows(count => Math.max(count, index + 1 + ROWS_AHEAD));
+    },
+    [centerOn],
+  );
 
   const openStory = useCallback(
     (story: Story, list: Story[]) =>
@@ -33,13 +49,39 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
     [navigation],
   );
 
+  useEffect(() => {
+    if (!ready || activeRows >= CATEGORIES.length) {
+      return;
+    }
+    const timer = setTimeout(
+      () => setActiveRows(count => count + 1),
+      ROW_ACTIVATION_INTERVAL_MS,
+    );
+    return () => clearTimeout(timer);
+  }, [ready, activeRows]);
+
+  useEffect(() => {
+    if (!ready) {
+      return;
+    }
+    return prefetchLists(
+      CATEGORIES.map(category => ({
+        key: category.tag,
+        fetcher: () => fetchStoriesByTag(category.tag),
+      })),
+    );
+  }, [ready]);
+
   const renderContent = () => {
+    if (!ready) {
+      return null;
+    }
     if (state.status === 'loading') {
       return (
         <StatusView
           kind="loading"
-          title="Loading stories…"
-          actionLabel="Reload"
+          title={t('loadingStories')}
+          actionLabel={t('reload')}
           onAction={reload}
           hasTVPreferredFocus
         />
@@ -50,9 +92,9 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
       return (
         <StatusView
           kind="offline"
-          title="No connection"
-          message="Check your network and try again."
-          actionLabel="Retry"
+          title={t('noConnection')}
+          message={t('checkNetwork')}
+          actionLabel={t('retry')}
           onAction={reload}
           hasTVPreferredFocus
         />
@@ -63,9 +105,9 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
       return (
         <StatusView
           kind="error"
-          title="Couldn't load stories"
+          title={t('couldntLoadStories')}
           message={state.error}
-          actionLabel="Retry"
+          actionLabel={t('retry')}
           onAction={reload}
           hasTVPreferredFocus
         />
@@ -78,8 +120,8 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
       return (
         <StatusView
           kind="empty"
-          title="No stories right now"
-          actionLabel="Retry"
+          title={t('noStoriesNow')}
+          actionLabel={t('retry')}
           onAction={reload}
           hasTVPreferredFocus
         />
@@ -103,13 +145,17 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
             />
           </FocusGroup>
         </View>
-        {CATEGORIES.map(category => (
+        {CATEGORIES.map((category, index) => (
           <View key={category.tag} onLayout={sectionLayout(category.tag)}>
-            <ErrorBoundary title={`Couldn't show ${category.label[language]}`}>
+            <ErrorBoundary
+              title={t('couldntShow', { name: category.label[language] })}
+            >
               <CategoryRow
                 category={category}
+                index={index}
+                active={index < activeRows}
                 onPressStory={openStory}
-                onFocus={() => centerOn(category.tag)}
+                onFocusRow={focusRow}
               />
             </ErrorBoundary>
           </View>

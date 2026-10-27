@@ -1,9 +1,9 @@
-import { Language } from '../../../../../types/language';
+import { TranslationKey } from '../../../../../i18n/en';
 import { MainSection } from '../../MainLayout.types';
 
 export interface NavItem {
   section: MainSection;
-  label: Record<Language, string>;
+  labelKey: TranslationKey;
 }
 
 export interface NavBarProps {

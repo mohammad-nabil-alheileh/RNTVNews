@@ -2,7 +2,7 @@ import {
   ArticleBlock,
   ArticleImageBlock,
   ArticleTextKind,
-} from '../types/story';
+} from '../../types/story';
 
 const CODE_CHUNK_LINES = 12;
 const LINE_BREAK = '\u0000';

@@ -1,4 +1,4 @@
 export interface SectionLayout {
-  y: number;
-  height: number;
+  offset: number;
+  size: number;
 }

@@ -1,7 +1,8 @@
 import React, { memo, useState } from 'react';
 import { Image, View } from 'react-native';
-import { sizedImageUrl } from '../../../../../../api/devtoImage';
-import { useStyles, useTheme } from '../../../../../../theme/theme';
+import { sizedImageUrl } from '../../../../../../utils/sizedImageUrl/sizedImageUrl';
+import { useStyles } from '../../../../../../hooks/useStyles/useStyles';
+import { useTheme } from '../../../../../../hooks/useTheme/useTheme';
 import {
   FALLBACK_RATIO,
   makeStyles,

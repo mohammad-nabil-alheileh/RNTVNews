@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ApiError } from '../../api/devto';
 import { LoadState } from '../../types/story';
+import { failureState } from '../../utils/failureState/failureState';
 
 export function useLoad<T>(load: () => Promise<T>) {
   const [state, setState] = useState<LoadState<T>>({ status: 'loading' });
@@ -17,15 +17,8 @@ export function useLoad<T>(load: () => Promise<T>) {
         }
       },
       (error: unknown) => {
-        if (!active) {
-          return;
-        }
-        if (error instanceof ApiError && error.kind === 'offline') {
-          setState({ status: 'offline' });
-        } else {
-          const message =
-            error instanceof Error ? error.message : String(error);
-          setState({ status: 'error', error: message });
+        if (active) {
+          setState(failureState(error));
         }
       },
     );

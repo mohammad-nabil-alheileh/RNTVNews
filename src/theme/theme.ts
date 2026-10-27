@@ -1,7 +1,6 @@
-import { useMemo } from 'react';
 import { Dimensions, PixelRatio } from 'react-native';
-import { useLanguage } from '../i18n/language';
 import { Language } from '../types/language';
+import { TextSize } from '../types/settings';
 import { fontFamily } from '../platform/fonts/fonts';
 
 const DESIGN_WIDTH = 1920;
@@ -27,19 +26,29 @@ export const colors = {
   transparent: 'transparent',
 } as const;
 
-export function createTheme(language: Language) {
+export const TEXT_SCALE: Record<TextSize, number> = {
+  small: 0.85,
+  medium: 1,
+  large: 1.15,
+  extraLarge: 1.3,
+};
+
+export function createTheme(language: Language, textSize: TextSize) {
   const ratio = SCREEN_WIDTH / DESIGN_WIDTH;
   const scale = (designPx: number) =>
     PixelRatio.roundToNearestPixel(designPx * ratio);
 
   const isRTL = language === 'ar';
 
+  const textScale = TEXT_SCALE[textSize];
+  const fontScale = (designPx: number) => scale(designPx * textScale);
+
   const fontSize = {
-    caption: scale(20),
-    body: scale(24),
-    reading: scale(30),
-    title: scale(32),
-    headline: scale(44),
+    caption: fontScale(20),
+    body: fontScale(24),
+    reading: fontScale(30),
+    title: fontScale(32),
+    headline: fontScale(44),
   };
 
   const lineHeightOf = (size: number) =>
@@ -49,6 +58,7 @@ export function createTheme(language: Language) {
     colors,
     scale,
     language,
+    textSize,
     isRTL,
     direction: isRTL ? ('rtl' as const) : ('ltr' as const),
     spacing: {
@@ -86,13 +96,3 @@ export function createTheme(language: Language) {
 }
 
 export type Theme = ReturnType<typeof createTheme>;
-
-export function useTheme(): Theme {
-  const language = useLanguage();
-  return useMemo(() => createTheme(language), [language]);
-}
-
-export function useStyles<T>(makeStyles: (theme: Theme) => T): T {
-  const theme = useTheme();
-  return useMemo(() => makeStyles(theme), [makeStyles, theme]);
-}

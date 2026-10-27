@@ -50,9 +50,13 @@ export function scrollListTo<T>(list: FlatList<T> | null, offset: number) {
   }
 }
 
-export function scrollViewTo(view: ScrollView | null, y: number) {
+export function scrollViewTo(
+  view: ScrollView | null,
+  offset: number,
+  horizontal = false,
+) {
   const node = domNode(view);
   if (node) {
-    animate(node, 'scrollTop', y);
+    animate(node, horizontal ? 'scrollLeft' : 'scrollTop', offset);
   }
 }

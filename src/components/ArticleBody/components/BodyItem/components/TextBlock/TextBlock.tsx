@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Text } from 'react-native';
 import { autoDirection } from '../../../../../../platform/textDirection/textDirection';
-import { useStyles } from '../../../../../../theme/theme';
+import { useStyles } from '../../../../../../hooks/useStyles/useStyles';
 import { makeStyles } from './TextBlock.styles';
 import { TextBlockProps } from './TextBlock.types';
 

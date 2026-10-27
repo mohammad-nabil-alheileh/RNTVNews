@@ -4,7 +4,6 @@ import { storyCardHeight } from '../shared/StoryCard/StoryCard.styles';
 
 export const makeStyles = (theme: Theme) => {
   const { colors, fontFamily, fontSize, lineHeight, safeArea, spacing } = theme;
-  const focusRoom = spacing.lg;
 
   return StyleSheet.create({
     title: {
@@ -16,12 +15,7 @@ export const makeStyles = (theme: Theme) => {
       marginHorizontal: safeArea.horizontal,
     },
     body: {
-      height: storyCardHeight(theme) + focusRoom * 2,
-    },
-    list: {
-      paddingHorizontal: safeArea.horizontal,
-      paddingVertical: focusRoom,
-      gap: spacing.lg,
+      height: storyCardHeight(theme) + spacing.lg * 2,
     },
   });
 };

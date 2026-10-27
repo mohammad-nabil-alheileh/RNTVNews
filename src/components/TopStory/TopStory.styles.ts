@@ -4,6 +4,9 @@ import { Theme } from '../../theme/theme';
 export const TITLE_LINES = 2;
 export const DESCRIPTION_LINES = 2;
 
+export const TOP_STORY_WIDTH = 1728;
+export const TOP_STORY_HEIGHT = 560;
+
 export const makeStyles = ({
   colors,
   focus,
@@ -16,7 +19,7 @@ export const makeStyles = ({
 }: Theme) =>
   StyleSheet.create({
     container: {
-      height: scale(560),
+      height: scale(TOP_STORY_HEIGHT),
       borderRadius: radius.lg,
       borderWidth: focus.borderWidth,
       borderColor: colors.transparent,

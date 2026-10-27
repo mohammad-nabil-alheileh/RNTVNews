@@ -28,7 +28,11 @@ export function appUrl() {
   return pathToFileURL(page).href;
 }
 
-export async function openApp({ language = 'en', width = 1920, height = 1080 } = {}) {
+export async function openApp({
+  language = 'en',
+  width = 1920,
+  height = 1080,
+} = {}) {
   const port = 9400 + Math.floor(Math.random() * 400);
   const profile = mkdtempSync(join(tmpdir(), 'tv-checks-'));
   const chrome = spawn(
@@ -51,7 +55,9 @@ export async function openApp({ language = 'en', width = 1920, height = 1080 } =
     await wait(500);
     try {
       target = await (
-        await fetch(`http://127.0.0.1:${port}/json/new?about:blank`, { method: 'PUT' })
+        await fetch(`http://127.0.0.1:${port}/json/new?about:blank`, {
+          method: 'PUT',
+        })
       ).json();
     } catch {}
   }
@@ -81,8 +87,13 @@ export async function openApp({ language = 'en', width = 1920, height = 1080 } =
       socket.send(JSON.stringify({ id: nextId, method, params }));
     });
   const evaluate = async expression =>
-    (await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true }))
-      .result?.value;
+    (
+      await send('Runtime.evaluate', {
+        expression,
+        returnByValue: true,
+        awaitPromise: true,
+      })
+    ).result?.value;
 
   await send('Runtime.enable');
   await send('Emulation.setDeviceMetricsOverride', {
@@ -113,7 +124,12 @@ export async function openApp({ language = 'en', width = 1920, height = 1080 } =
       ...enter,
     });
     if (!hold) {
-      await send('Input.dispatchKeyEvent', { type: 'keyUp', key, code: key, windowsVirtualKeyCode: code });
+      await send('Input.dispatchKeyEvent', {
+        type: 'keyUp',
+        key,
+        code: key,
+        windowsVirtualKeyCode: code,
+      });
     }
   };
   const release = key =>

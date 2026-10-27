@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, ListRenderItem, View } from 'react-native';
 import { fetchStoriesByTag } from '../../../../api/devto';
 import { useCenteredRail } from '../../../../hooks/useCenteredRail/useCenteredRail';
@@ -36,7 +36,7 @@ export function RowBody({ tag, label, onPressStory, onFocus }: RowBodyProps) {
 
   const load = useCallback(() => fetchStoriesByTag(tag), [tag]);
   const { state, reload } = useCachedList(tag, load);
-  const shown = useRef<Story[] | null>(null);
+  const [shown, setShown] = useState<Story[] | null>(null);
   const ltr = layoutDirectionProps('ltr');
   const [firstCard, setFirstCard] = useState<View | null>(null);
 
@@ -50,7 +50,7 @@ export function RowBody({ tag, label, onPressStory, onFocus }: RowBodyProps) {
   );
 
   const loaded = state.status === 'success' ? state.data : NO_STORIES;
-  const stories = shown.current ?? loaded;
+  const stories = shown ?? loaded;
   const cards = useMemo(
     () => visualOrder(stories, theme.isRTL),
     [stories, theme.isRTL],
@@ -64,11 +64,13 @@ export function RowBody({ tag, label, onPressStory, onFocus }: RowBodyProps) {
 
   const focusStory = useCallback(
     (story: Story) => {
-      shown.current = stories;
+      if (shown === null) {
+        setShown(stories);
+      }
       centerOn(cards.findIndex(card => card.id === story.id));
       onFocus?.();
     },
-    [stories, cards, centerOn, onFocus],
+    [shown, stories, cards, centerOn, onFocus],
   );
 
   const renderItem = useCallback<ListRenderItem<Story>>(

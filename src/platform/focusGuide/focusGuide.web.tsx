@@ -4,6 +4,7 @@ import { FocusGroupProps } from '../../components/shared/FocusGroup/FocusGroup.t
 
 const ENTRY_ATTRIBUTE = 'data-focus-entry';
 let nextGroupId = 1;
+const newGroupId = () => String(nextGroupId++);
 
 export function FocusGuide({
   children,
@@ -12,7 +13,7 @@ export function FocusGuide({
   entry,
   style,
 }: FocusGroupProps) {
-  const [groupId] = useState(() => String(nextGroupId++));
+  const [groupId] = useState(newGroupId);
   const marked = useRef<HTMLElement | null>(null);
 
   useEffect(() => {

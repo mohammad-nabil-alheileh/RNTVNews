@@ -40,7 +40,7 @@ module.exports = (env, argv) => ({
               ['@babel/preset-react', { runtime: 'automatic' }],
               '@babel/preset-typescript',
             ],
-            plugins: ['react-native-web'],
+            plugins: ['babel-plugin-react-compiler', 'react-native-web'],
           },
         },
       },

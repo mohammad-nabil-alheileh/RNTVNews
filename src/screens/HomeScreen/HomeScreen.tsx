@@ -3,6 +3,7 @@ import { ScrollView, View } from 'react-native';
 import { CATEGORIES } from '../../api/categories';
 import { fetchStoriesByTag, fetchTopStories } from '../../api/devto';
 import { prefetchLists } from '../../api/listCache';
+import { clearRowMemory } from '../../api/rowMemory';
 import { CategoryRow } from '../../components/CategoryRow/CategoryRow';
 import { ErrorBoundary } from '../../components/shared/ErrorBoundary/ErrorBoundary';
 import { FocusGroup } from '../../components/shared/FocusGroup/FocusGroup';
@@ -15,13 +16,14 @@ import { useListCacheReady } from '../../hooks/useListCacheReady/useListCacheRea
 import { useLanguage } from '../../hooks/useLanguage/useLanguage';
 import { useStyles } from '../../hooks/useStyles/useStyles';
 import { ScreenProps } from '../../types/navigation';
+import { RowFocus } from '../../types/layout';
 import { Story } from '../../types/story';
+import { isRowInWindow } from '../../utils/isRowInWindow/isRowInWindow';
 import { makeStyles } from './HomeScreen.styles';
 import { useTranslation } from '../../hooks/useTranslation/useTranslation';
 
 const TOP_SECTION = 'top';
-const ROWS_AHEAD = 3;
-const ROW_ACTIVATION_INTERVAL_MS = 120;
+const TOP_ROW = -1;
 
 export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
   const t = useTranslation();
@@ -30,15 +32,31 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
   const ready = useListCacheReady();
   const { state, reload } = useCachedList('top', fetchTopStories);
   const { scrollRef, onLayout, sectionLayout, centerOn } = useCenteredScroll();
-  const [activeRows, setActiveRows] = useState(ROWS_AHEAD + 1);
+  const [rowFocus, setRowFocus] = useState<RowFocus>({
+    row: TOP_ROW,
+    movingDown: true,
+  });
+
+  const moveRowFocus = useCallback((row: number) => {
+    setRowFocus(prev =>
+      prev.row === row ? prev : { row, movingDown: row > prev.row },
+    );
+  }, []);
 
   const focusRow = useCallback(
     (tag: string, index: number) => {
       centerOn(tag);
-      setActiveRows(count => Math.max(count, index + 1 + ROWS_AHEAD));
+      moveRowFocus(index);
     },
-    [centerOn],
+    [centerOn, moveRowFocus],
   );
+
+  const focusTop = useCallback(() => {
+    centerOn(TOP_SECTION);
+    moveRowFocus(TOP_ROW);
+  }, [centerOn, moveRowFocus]);
+
+  useEffect(() => clearRowMemory, []);
 
   const openStory = useCallback(
     (story: Story, list: Story[]) =>
@@ -48,17 +66,6 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
       }),
     [navigation],
   );
-
-  useEffect(() => {
-    if (!ready || activeRows >= CATEGORIES.length) {
-      return;
-    }
-    const timer = setTimeout(
-      () => setActiveRows(count => count + 1),
-      ROW_ACTIVATION_INTERVAL_MS,
-    );
-    return () => clearTimeout(timer);
-  }, [ready, activeRows]);
 
   useEffect(() => {
     if (!ready) {
@@ -140,7 +147,7 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
             <TopStory
               story={top}
               onPress={story => openStory(story, state.data)}
-              onFocus={() => centerOn(TOP_SECTION)}
+              onFocus={focusTop}
               hasTVPreferredFocus
             />
           </FocusGroup>
@@ -153,7 +160,7 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
               <CategoryRow
                 category={category}
                 index={index}
-                active={index < activeRows}
+                active={isRowInWindow(index, rowFocus)}
                 onPressStory={openStory}
                 onFocusRow={focusRow}
               />

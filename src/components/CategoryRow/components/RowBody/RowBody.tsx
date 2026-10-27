@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, ListRenderItem, View } from 'react-native';
 import { fetchStoriesByTag } from '../../../../api/devto';
+import { getRowMemory, setRowMemory } from '../../../../api/rowMemory';
 import { useCenteredRail } from '../../../../hooks/useCenteredRail/useCenteredRail';
 import { useCachedList } from '../../../../hooks/useCachedList/useCachedList';
 import { useStyles } from '../../../../hooks/useStyles/useStyles';
@@ -28,17 +29,14 @@ export function RowBody({ tag, label, onPressStory, onFocus }: RowBodyProps) {
   const gap = theme.spacing.lg;
   const paddingStart = theme.safeArea.horizontal;
 
-  const { listRef, onLayout, centerOn } = useCenteredRail<Story>({
-    itemWidth,
-    gap,
-    paddingStart,
-  });
-
   const load = useCallback(() => fetchStoriesByTag(tag), [tag]);
   const { state, reload } = useCachedList(tag, load);
-  const [shown, setShown] = useState<Story[] | null>(null);
+  const [remembered] = useState(() => getRowMemory(tag));
+  const [shown, setShown] = useState<Story[] | null>(
+    remembered?.stories ?? null,
+  );
   const ltr = layoutDirectionProps('ltr');
-  const [firstCard, setFirstCard] = useState<View | null>(null);
+  const [entryCard, setEntryCard] = useState<View | null>(null);
 
   const getItemLayout = useCallback(
     (_: ArrayLike<Story> | null | undefined, index: number) => ({
@@ -55,7 +53,17 @@ export function RowBody({ tag, label, onPressStory, onFocus }: RowBodyProps) {
     () => visualOrder(stories, theme.isRTL),
     [stories, theme.isRTL],
   );
-  const firstStoryId = stories[0]?.id;
+  const entryId = remembered?.focusedId ?? stories[0]?.id;
+  const restoreIndex = remembered
+    ? cards.findIndex(card => card.id === remembered.focusedId)
+    : -1;
+
+  const { listRef, onLayout, centerOn } = useCenteredRail<Story>({
+    itemWidth,
+    gap,
+    paddingStart,
+    initialIndex: restoreIndex >= 0 ? restoreIndex : undefined,
+  });
 
   const openStory = useCallback(
     (story: Story) => onPressStory(story, stories),
@@ -67,23 +75,31 @@ export function RowBody({ tag, label, onPressStory, onFocus }: RowBodyProps) {
       if (shown === null) {
         setShown(stories);
       }
+      setRowMemory(tag, { stories, focusedId: story.id });
       centerOn(cards.findIndex(card => card.id === story.id));
       onFocus?.();
     },
-    [shown, stories, cards, centerOn, onFocus],
+    [shown, stories, tag, cards, centerOn, onFocus],
   );
 
   const renderItem = useCallback<ListRenderItem<Story>>(
     ({ item }) => (
       <StoryCard
-        ref={item.id === firstStoryId ? setFirstCard : undefined}
+        ref={item.id === entryId ? setEntryCard : undefined}
         story={item}
         onPress={openStory}
         onFocus={focusStory}
       />
     ),
-    [firstStoryId, openStory, focusStory],
+    [entryId, openStory, focusStory],
   );
+
+  let initialScrollIndex: number | undefined;
+  if (restoreIndex >= 0) {
+    initialScrollIndex = Math.max(0, restoreIndex - 2);
+  } else if (theme.isRTL) {
+    initialScrollIndex = cards.length - 1;
+  }
 
   switch (state.status) {
     case 'loading':
@@ -125,12 +141,12 @@ export function RowBody({ tag, label, onPressStory, onFocus }: RowBodyProps) {
         );
       }
       return (
-        <FocusGroup remember trap={['left', 'right']} entry={firstCard}>
+        <FocusGroup remember trap={['left', 'right']} entry={entryCard}>
           <FlatList
             key={theme.direction}
             {...ltr}
             style={ltr.style}
-            initialScrollIndex={theme.isRTL ? cards.length - 1 : undefined}
+            initialScrollIndex={initialScrollIndex}
             ref={listRef}
             onLayout={onLayout}
             horizontal

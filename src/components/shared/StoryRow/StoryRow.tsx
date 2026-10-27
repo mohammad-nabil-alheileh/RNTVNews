@@ -10,6 +10,7 @@ import { useTheme } from '../../../hooks/useTheme/useTheme';
 import { makeStyles, thumbSize, TITLE_LINES } from './StoryRow.styles';
 import { StoryRowProps } from './StoryRow.types';
 import { useTranslation } from '../../../hooks/useTranslation/useTranslation';
+import { useImageFailure } from '../../../hooks/useImageFailure/useImageFailure';
 
 function StoryRowView({
   story,
@@ -23,7 +24,7 @@ function StoryRowView({
   const theme = useTheme();
   const language = useLanguage();
   const [focused, setFocused] = useState(false);
-  const [imageFailed, setImageFailed] = useState(false);
+  const [imageFailed, markImageFailed] = useImageFailure();
   const thumb = thumbSize(theme);
 
   const date = useMemo(
@@ -58,7 +59,7 @@ function StoryRowView({
             resizeMode="cover"
             resizeMethod="resize"
             fadeDuration={0}
-            onError={() => setImageFailed(true)}
+            onError={markImageFailed}
             style={thumb}
           />
         )}

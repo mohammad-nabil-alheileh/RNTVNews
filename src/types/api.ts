@@ -1,1 +1,1 @@
-export type ApiErrorKind = 'offline' | 'error';
+export type ApiErrorKind = 'offline' | 'timeout' | 'error';

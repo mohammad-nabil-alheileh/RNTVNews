@@ -7,6 +7,7 @@ export const ar: Record<TranslationKey, string> = {
   reload: 'إعادة التحميل',
   noConnection: 'لا يوجد اتصال',
   checkNetwork: 'تحقّق من الشبكة وحاول مرة أخرى.',
+  timedOut: 'لم يستجب dev.to. حاول مرة أخرى بعد قليل.',
   somethingWentWrong: 'حدث خطأ ما',
   tryAgain: 'حاول مرة أخرى',
   keep: 'إبقاء',

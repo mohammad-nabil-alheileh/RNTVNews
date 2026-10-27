@@ -14,6 +14,7 @@ import {
   TITLE_LINES,
 } from './StoryCard.styles';
 import { StoryCardProps } from './StoryCard.types';
+import { useImageFailure } from '../../../hooks/useImageFailure/useImageFailure';
 
 function StoryCardView({
   story,
@@ -27,7 +28,7 @@ function StoryCardView({
   const theme = useTheme();
   const language = useLanguage();
   const [focused, setFocused] = useState(false);
-  const [imageFailed, setImageFailed] = useState(false);
+  const [imageFailed, markImageFailed] = useImageFailure();
 
   const cardWidth = theme.scale(width);
   const imageHeight = storyCardImageHeight(theme, width);
@@ -65,7 +66,7 @@ function StoryCardView({
             resizeMode="cover"
             resizeMethod="resize"
             fadeDuration={0}
-            onError={() => setImageFailed(true)}
+            onError={markImageFailed}
             style={{ width: cardWidth, height: imageHeight }}
           />
         )}

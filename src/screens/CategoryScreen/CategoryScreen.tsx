@@ -83,7 +83,7 @@ export function CategoryScreen({ navigation, route }: ScreenProps<'Category'>) {
           <StatusView
             kind="error"
             title={t('couldntLoadStories')}
-            message={state.error}
+            message={state.timedOut ? t('timedOut') : state.error}
             actionLabel={t('retry')}
             onAction={reload}
           />

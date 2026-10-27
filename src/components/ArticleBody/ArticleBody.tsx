@@ -82,7 +82,7 @@ export function ArticleBody({
           <StatusView
             kind="error"
             title={t('couldntLoadStory')}
-            message={state.error}
+            message={state.timedOut ? t('timedOut') : state.error}
             actionLabel={t('retry')}
             onAction={onRetry}
             hasTVPreferredFocus={preferred}

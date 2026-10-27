@@ -6,5 +6,6 @@ export function failureState<T>(error: unknown): LoadState<T> {
     return { status: 'offline' };
   }
   const message = error instanceof Error ? error.message : String(error);
-  return { status: 'error', error: message };
+  const timedOut = error instanceof ApiError && error.kind === 'timeout';
+  return { status: 'error', error: message, timedOut };
 }

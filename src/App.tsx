@@ -9,6 +9,7 @@ import { ExitDialog } from './components/ExitDialog/ExitDialog';
 import { ScreenFrame } from './components/shared/ScreenFrame/ScreenFrame';
 import { exitApp, onBack } from './platform/back/back';
 import { CATEGORIES } from './api/categories';
+import { startConnectionWatch } from './api/connection';
 import { loadListCache } from './api/listCache';
 import { loadSaved } from './api/savedStore';
 import { loadSettings } from './api/settingsStore';
@@ -29,6 +30,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
 startSpatialNavigation();
+startConnectionWatch();
 loadSettings();
 loadSaved();
 loadListCache(['top', ...CATEGORIES.map(category => category.tag)]);

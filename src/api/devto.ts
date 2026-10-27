@@ -1,6 +1,7 @@
 import { ApiErrorKind } from '../types/api';
 import { DevtoArticle } from '../types/devto';
 import { Article, Story } from '../types/story';
+import { reportOffline, reportOnline } from './connection';
 import { addStories } from './storyStore';
 import { parseArticleBody } from '../utils/parseArticleBody/parseArticleBody';
 
@@ -20,24 +21,38 @@ export class ApiError extends Error {
 
 async function getJson<T>(path: string): Promise<T> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, TIMEOUT_MS);
 
-  let response: Response;
   try {
-    response = await fetch(BASE_URL + path, { signal: controller.signal });
+    const response = await fetch(BASE_URL + path, {
+      signal: controller.signal,
+    });
+    reportOnline();
+    if (!response.ok) {
+      throw new ApiError('error', `dev.to responded ${response.status}`);
+    }
+    return (await response.json()) as T;
   } catch (cause) {
+    if (cause instanceof ApiError) {
+      throw cause;
+    }
+    if (cause instanceof SyntaxError) {
+      throw new ApiError('error', 'dev.to sent an unreadable response');
+    }
     if (__DEV__) {
       console.warn(`dev.to request failed: ${path}`, cause);
     }
-    throw new ApiError('offline', 'Network request failed');
+    reportOffline();
+    throw timedOut
+      ? new ApiError('timeout', 'dev.to did not respond')
+      : new ApiError('offline', 'Network request failed');
   } finally {
     clearTimeout(timer);
   }
-
-  if (!response.ok) {
-    throw new ApiError('error', `dev.to responded ${response.status}`);
-  }
-  return response.json() as Promise<T>;
 }
 
 function tagsOf(raw: DevtoArticle): string[] {

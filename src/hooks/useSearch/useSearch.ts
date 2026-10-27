@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { refreshForQuery, searchStories } from '../../api/search';
+import { useOnRecovery } from '../useOnRecovery/useOnRecovery';
 import { SearchState } from './useSearch.types';
 
 const DEBOUNCE_MS = 1000;
@@ -12,6 +13,13 @@ const EMPTY: SearchState = {
 
 export function useSearch(query: string): SearchState {
   const [state, setState] = useState<SearchState>(EMPTY);
+  const [retry, setRetry] = useState(0);
+
+  useOnRecovery(() => {
+    if (state.offline) {
+      setRetry(n => n + 1);
+    }
+  });
 
   useEffect(() => {
     const trimmed = query.trim();
@@ -44,7 +52,7 @@ export function useSearch(query: string): SearchState {
       active = false;
       clearTimeout(timer);
     };
-  }, [query]);
+  }, [query, retry]);
 
   return state;
 }

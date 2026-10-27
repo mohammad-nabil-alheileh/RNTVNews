@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo } from 'react';
 import { Image, View } from 'react-native';
 import { sizedImageUrl } from '../../../../../../utils/sizedImageUrl/sizedImageUrl';
 import { useStyles } from '../../../../../../hooks/useStyles/useStyles';
@@ -9,11 +9,12 @@ import {
   MAX_IMAGE_HEIGHT,
 } from './ImageBlock.styles';
 import { ImageBlockProps } from './ImageBlock.types';
+import { useImageFailure } from '../../../../../../hooks/useImageFailure/useImageFailure';
 
 function ImageBlockView({ block, width }: ImageBlockProps) {
   const styles = useStyles(makeStyles);
   const theme = useTheme();
-  const [failed, setFailed] = useState(false);
+  const [failed, markImageFailed] = useImageFailure();
 
   const ratio = block.aspectRatio ?? FALLBACK_RATIO;
   const height = Math.round(
@@ -31,7 +32,7 @@ function ImageBlockView({ block, width }: ImageBlockProps) {
           resizeMode="contain"
           resizeMethod="resize"
           fadeDuration={0}
-          onError={() => setFailed(true)}
+          onError={markImageFailed}
           style={{ width: imageWidth, height }}
         />
       )}

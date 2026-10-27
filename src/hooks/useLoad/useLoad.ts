@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { LoadState } from '../../types/story';
 import { failureState } from '../../utils/failureState/failureState';
+import { useOnRecovery } from '../useOnRecovery/useOnRecovery';
 
 export function useLoad<T>(load: () => Promise<T>) {
   const [state, setState] = useState<LoadState<T>>({ status: 'loading' });
@@ -29,6 +30,12 @@ export function useLoad<T>(load: () => Promise<T>) {
   }, [load, attempt]);
 
   const reload = useCallback(() => setAttempt(n => n + 1), []);
+
+  useOnRecovery(() => {
+    if (state.status === 'offline' || state.status === 'error') {
+      reload();
+    }
+  });
 
   return { state, reload };
 }

@@ -8,6 +8,7 @@ import {
 import { LoadState, Story } from '../../types/story';
 import { failureState } from '../../utils/failureState/failureState';
 import { useListCacheReady } from '../useListCacheReady/useListCacheReady';
+import { useOnRecovery } from '../useOnRecovery/useOnRecovery';
 
 export function useCachedList(key: string, fetcher: () => Promise<Story[]>) {
   const ready = useListCacheReady();
@@ -36,6 +37,12 @@ export function useCachedList(key: string, fetcher: () => Promise<Story[]>) {
   }, [ready, key, fetcher, attempt]);
 
   const reload = useCallback(() => setAttempt(n => n + 1), []);
+
+  useOnRecovery(() => {
+    if (!isListFresh(key)) {
+      reload();
+    }
+  });
 
   let state: LoadState<Story[]>;
   if (cached) {

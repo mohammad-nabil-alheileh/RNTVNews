@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Image, Text, View } from 'react-native';
 import { sizedImageUrl } from '../../../../../../utils/sizedImageUrl/sizedImageUrl';
 import { autoDirection } from '../../../../../../platform/textDirection/textDirection';
@@ -6,11 +6,12 @@ import { useStyles } from '../../../../../../hooks/useStyles/useStyles';
 import { COVER_RATIO, makeStyles } from './ArticleHeader.styles';
 import { ArticleHeaderProps } from './ArticleHeader.types';
 import { useTranslation } from '../../../../../../hooks/useTranslation/useTranslation';
+import { useImageFailure } from '../../../../../../hooks/useImageFailure/useImageFailure';
 
 export function ArticleHeader({ story, date, width }: ArticleHeaderProps) {
   const t = useTranslation();
   const styles = useStyles(makeStyles);
-  const [imageFailed, setImageFailed] = useState(false);
+  const [imageFailed, markImageFailed] = useImageFailure();
   const coverHeight = Math.round(width / COVER_RATIO);
 
   return (
@@ -33,7 +34,7 @@ export function ArticleHeader({ story, date, width }: ArticleHeaderProps) {
               resizeMode="cover"
               resizeMethod="resize"
               fadeDuration={0}
-              onError={() => setImageFailed(true)}
+              onError={markImageFailed}
               style={{ width, height: coverHeight }}
             />
           )}

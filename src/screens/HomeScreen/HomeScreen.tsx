@@ -106,7 +106,7 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
         <StatusView
           kind="error"
           title={t('couldntLoadStories')}
-          message={state.error}
+          message={state.timedOut ? t('timedOut') : state.error}
           actionLabel={t('retry')}
           onAction={reload}
           hasTVPreferredFocus

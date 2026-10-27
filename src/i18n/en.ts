@@ -5,6 +5,7 @@ export const en = {
   reload: 'Reload',
   noConnection: 'No connection',
   checkNetwork: 'Check your network and try again.',
+  timedOut: "dev.to didn't respond. Try again in a moment.",
   somethingWentWrong: 'Something went wrong',
   tryAgain: 'Try again',
   keep: 'Keep',

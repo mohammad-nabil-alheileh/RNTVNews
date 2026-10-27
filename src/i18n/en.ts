@@ -79,6 +79,24 @@ export const en = {
   deviceModel: 'Device model',
   operatingSystem: 'Operating system',
   osVersion: 'OS version',
+
+  signInTitle: 'Sign in to TV News Reader',
+  signInScan: '1. Scan the QR code with your phone. That is all.',
+  signInOrVisit: '2. No camera? Open this address on your phone:',
+  codeExpiresIn: 'Code expires in {time}',
+  newCode: 'Get a new code',
+  codeExpiredNotice: 'The last code expired, so here is a new one.',
+  storyWaiting: 'Sign in to open the story you were sent.',
+  qrLabel: 'QR code for signing in with your phone',
+  account: 'Account',
+  signOut: 'Sign out',
+  signOutTitle: 'Sign out of TV News Reader?',
+  signOutMessage: "You'll need your phone to sign in again.",
+  cancel: 'Cancel',
+  signInYourCode: 'Your code:',
+  signInRelayUnreachable:
+    "Can't reach ntfy.sh. Check the TV's internet connection. Still trying…",
+  signedInWithPhone: 'Signed in with your phone',
 };
 
 export type TranslationKey = keyof typeof en;

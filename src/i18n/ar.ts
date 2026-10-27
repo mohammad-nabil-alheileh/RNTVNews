@@ -81,4 +81,22 @@ export const ar: Record<TranslationKey, string> = {
   deviceModel: 'طراز الجهاز',
   operatingSystem: 'نظام التشغيل',
   osVersion: 'إصدار النظام',
+
+  signInTitle: 'سجّل الدخول إلى قارئ الأخبار',
+  signInScan: '1. امسح رمز QR بهاتفك. هذا كل شيء.',
+  signInOrVisit: '2. لا توجد كاميرا؟ افتح هذا العنوان على هاتفك:',
+  codeExpiresIn: 'تنتهي صلاحية الرمز خلال {time}',
+  newCode: 'احصل على رمز جديد',
+  codeExpiredNotice: 'انتهت صلاحية الرمز السابق، وهذا رمز جديد.',
+  storyWaiting: 'سجّل الدخول لفتح القصة التي أُرسلت إليك.',
+  qrLabel: 'رمز QR لتسجيل الدخول بهاتفك',
+  account: 'الحساب',
+  signOut: 'تسجيل الخروج',
+  signOutTitle: 'تسجيل الخروج من قارئ الأخبار؟',
+  signOutMessage: 'ستحتاج إلى هاتفك لتسجيل الدخول مرة أخرى.',
+  cancel: 'إلغاء',
+  signInYourCode: 'رمزك:',
+  signInRelayUnreachable:
+    'تعذّر الوصول إلى ntfy.sh. تحقق من اتصال التلفاز بالإنترنت. ما زلنا نحاول…',
+  signedInWithPhone: 'تم تسجيل الدخول بهاتفك',
 };

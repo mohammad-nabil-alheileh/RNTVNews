@@ -23,6 +23,8 @@ export const colors = {
   textOnFocus: '#10171d',
   error: '#ff6b6b',
   overlay: 'rgba(0, 0, 0, 0.7)',
+  qrDark: '#000000',
+  qrLight: '#ffffff',
   transparent: 'transparent',
 } as const;
 

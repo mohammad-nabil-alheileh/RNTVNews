@@ -8,10 +8,12 @@ import {
 import { LoadState, Story } from '../../types/story';
 import { failureState } from '../../utils/failureState/failureState';
 import { useListCacheReady } from '../useListCacheReady/useListCacheReady';
+import { useListGeneration } from '../useListGeneration/useListGeneration';
 import { useOnRecovery } from '../useOnRecovery/useOnRecovery';
 
 export function useCachedList(key: string, fetcher: () => Promise<Story[]>) {
   const ready = useListCacheReady();
+  const generation = useListGeneration();
   const subscribe = useCallback(
     (listener: () => void) => subscribeList(key, listener),
     [key],
@@ -34,7 +36,7 @@ export function useCachedList(key: string, fetcher: () => Promise<Story[]>) {
     return () => {
       active = false;
     };
-  }, [ready, key, fetcher, attempt]);
+  }, [ready, key, fetcher, attempt, generation]);
 
   const reload = useCallback(() => setAttempt(n => n + 1), []);
 

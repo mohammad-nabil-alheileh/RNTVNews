@@ -4,13 +4,35 @@ import { addStories } from './storyStore';
 
 const STORAGE_PREFIX = 'list:';
 const PREFETCH_CONCURRENCY = 2;
+const MAX_RUNNING_FETCHES = 3;
 
 const lists = new Map<string, Story[]>();
 const freshKeys = new Set<string>();
 const inFlight = new Map<string, Promise<Story[]>>();
 const listeners = new Map<string, Set<() => void>>();
 const readyListeners = new Set<() => void>();
+const generationListeners = new Set<() => void>();
+const waitingForSlot: (() => void)[] = [];
 let ready = false;
+let generation = 0;
+let running = 0;
+
+function takeSlot(): Promise<void> {
+  if (running < MAX_RUNNING_FETCHES) {
+    running += 1;
+    return Promise.resolve();
+  }
+  return new Promise(resolve => waitingForSlot.push(resolve));
+}
+
+function releaseSlot() {
+  const next = waitingForSlot.shift();
+  if (next) {
+    next();
+  } else {
+    running -= 1;
+  }
+}
 
 function emit(key: string) {
   listeners.get(key)?.forEach(listener => listener());
@@ -66,6 +88,23 @@ export function isListFresh(key: string): boolean {
   return freshKeys.has(key);
 }
 
+export function getListGeneration(): number {
+  return generation;
+}
+
+export function subscribeListGeneration(listener: () => void): () => void {
+  generationListeners.add(listener);
+  return () => {
+    generationListeners.delete(listener);
+  };
+}
+
+export function expireLists(): void {
+  freshKeys.clear();
+  generation += 1;
+  generationListeners.forEach(listener => listener());
+}
+
 export function subscribeList(key: string, listener: () => void): () => void {
   const set = listeners.get(key) ?? new Set();
   set.add(listener);
@@ -79,11 +118,12 @@ export function fetchList(
   key: string,
   fetcher: () => Promise<Story[]>,
 ): Promise<Story[]> {
-  const running = inFlight.get(key);
-  if (running) {
-    return running;
+  const existing = inFlight.get(key);
+  if (existing) {
+    return existing;
   }
-  const request = fetcher()
+  const request = takeSlot()
+    .then(() => fetcher().finally(releaseSlot))
     .then(stories => {
       lists.set(key, stories);
       freshKeys.add(key);

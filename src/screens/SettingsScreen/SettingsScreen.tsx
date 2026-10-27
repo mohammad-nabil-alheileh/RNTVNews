@@ -1,5 +1,7 @@
-import React from 'react';
-import { View } from 'react-native';
+import React, { useState } from 'react';
+import { Text, View } from 'react-native';
+import { signOut } from '../../api/auth';
+import { ConfirmDialog } from '../../components/shared/ConfirmDialog/ConfirmDialog';
 import { setLanguage, setTextSize } from '../../api/settingsStore';
 import { SettingOption } from '../../components/SettingOption/SettingOption';
 import { SettingOptionItem } from '../../components/SettingOption/SettingOption.types';
@@ -24,6 +26,7 @@ const LANGUAGE_OPTIONS: SettingOptionItem[] = [
 export function SettingsScreen({ navigation }: ScreenProps<'Settings'>) {
   const styles = useStyles(makeStyles);
   const { language, textSize } = useSettings();
+  const [confirmingSignOut, setConfirmingSignOut] = useState(false);
   const t = useTranslation();
   const textSizeOptions: SettingOptionItem[] = TEXT_SIZES.map(size => ({
     value: size,
@@ -46,13 +49,34 @@ export function SettingsScreen({ navigation }: ScreenProps<'Settings'>) {
           selected={language}
           onSelect={value => setLanguage(value as Language)}
         />
-        <FocusGroup trap={['left', 'right']} style={styles.about}>
+        <View>
+          <Text style={styles.sectionTitle} accessibilityRole="header">
+            {t('account')}
+          </Text>
+          <Text style={styles.accountName}>{t('signedInWithPhone')}</Text>
+          <FocusGroup trap={['left', 'right']} style={styles.row}>
+            <FocusableButton
+              label={t('signOut')}
+              onPress={() => setConfirmingSignOut(true)}
+            />
+          </FocusGroup>
+        </View>
+        <FocusGroup trap={['left', 'right']} style={styles.row}>
           <FocusableButton
             label={t('aboutThisApp')}
             onPress={() => navigation.navigate('About')}
           />
         </FocusGroup>
       </View>
+      <ConfirmDialog
+        visible={confirmingSignOut}
+        title={t('signOutTitle')}
+        message={t('signOutMessage')}
+        confirmLabel={t('signOut')}
+        cancelLabel={t('cancel')}
+        onConfirm={signOut}
+        onCancel={() => setConfirmingSignOut(false)}
+      />
     </MainLayout>
   );
 }

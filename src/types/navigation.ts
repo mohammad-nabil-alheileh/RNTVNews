@@ -8,6 +8,7 @@ export type RootStackParamList = {
   Saved: undefined;
   Settings: undefined;
   About: undefined;
+  SignIn: { storyWaiting?: boolean } | undefined;
 };
 
 export type ScreenProps<Name extends keyof RootStackParamList> =

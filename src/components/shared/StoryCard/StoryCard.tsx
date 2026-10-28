@@ -14,6 +14,7 @@ import {
   TITLE_LINES,
 } from './StoryCard.styles';
 import { StoryCardProps } from './StoryCard.types';
+import { useImageFade } from '../../../platform/imageFade/imageFade';
 import { useImageFailure } from '../../../hooks/useImageFailure/useImageFailure';
 
 function StoryCardView({
@@ -29,6 +30,7 @@ function StoryCardView({
   const language = useLanguage();
   const [focused, setFocused] = useState(false);
   const [imageFailed, markImageFailed] = useImageFailure();
+  const imageFade = useImageFade();
 
   const cardWidth = theme.scale(width);
   const imageHeight = storyCardImageHeight(theme, width);
@@ -60,25 +62,28 @@ function StoryCardView({
       <View style={[styles.image, { height: imageHeight }]}>
         {showImage && (
           <Image
+            {...imageFade}
             source={{
               uri: sizedImageUrl(story.imageUrl!, cardWidth, imageHeight),
             }}
             resizeMode="cover"
             resizeMethod="resize"
-            fadeDuration={0}
             onError={markImageFailed}
             style={{ width: cardWidth, height: imageHeight }}
           />
         )}
       </View>
       <View style={styles.body}>
-        <Text
-          {...autoDirection}
-          numberOfLines={TITLE_LINES}
-          style={styles.title}
-        >
-          {story.title}
-        </Text>
+        <View style={styles.titleBox}>
+          <Text
+            {...autoDirection}
+            numberOfLines={TITLE_LINES}
+            ellipsizeMode="tail"
+            style={styles.title}
+          >
+            {story.title}
+          </Text>
+        </View>
         <Text {...autoDirection} numberOfLines={1} style={styles.meta}>
           {meta}
         </Text>

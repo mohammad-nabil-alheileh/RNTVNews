@@ -16,6 +16,7 @@ import {
 } from './TopStory.styles';
 import { TopStoryProps } from './TopStory.types';
 import { useTranslation } from '../../hooks/useTranslation/useTranslation';
+import { useImageFade } from '../../platform/imageFade/imageFade';
 import { useImageFailure } from '../../hooks/useImageFailure/useImageFailure';
 
 export function TopStory({
@@ -30,6 +31,7 @@ export function TopStory({
   const language = useLanguage();
   const [focused, setFocused] = useState(false);
   const [imageFailed, markImageFailed] = useImageFailure();
+  const imageFade = useImageFade();
 
   const date = useMemo(
     () => formatShortDate(story.publishedAt, language),
@@ -56,6 +58,7 @@ export function TopStory({
     >
       {showImage && (
         <Image
+          {...imageFade}
           source={{
             uri: sizedImageUrl(
               story.imageUrl!,
@@ -65,7 +68,6 @@ export function TopStory({
           }}
           resizeMode="cover"
           resizeMethod="resize"
-          fadeDuration={0}
           onError={markImageFailed}
           style={styles.image}
         />

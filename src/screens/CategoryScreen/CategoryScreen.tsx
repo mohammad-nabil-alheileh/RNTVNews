@@ -7,6 +7,7 @@ import { CategoryTabs } from '../../components/CategoryTabs/CategoryTabs';
 import { MainLayout } from '../../components/shared/MainLayout/MainLayout';
 import { StatusView } from '../../components/shared/StatusView/StatusView';
 import { StoryGrid } from '../../components/StoryGrid/StoryGrid';
+import { StoryGridSkeleton } from '../../components/StoryGridSkeleton/StoryGridSkeleton';
 import { useCachedList } from '../../hooks/useCachedList/useCachedList';
 import { onBack } from '../../platform/back/back';
 import { requestFocus } from '../../platform/requestFocus/requestFocus';
@@ -60,14 +61,7 @@ export function CategoryScreen({ navigation, route }: ScreenProps<'Category'>) {
   const renderGrid = () => {
     switch (state.status) {
       case 'loading':
-        return (
-          <StatusView
-            kind="loading"
-            title={t('loadingStories')}
-            actionLabel={t('reload')}
-            onAction={reload}
-          />
-        );
+        return <StoryGridSkeleton />;
       case 'offline':
         return (
           <StatusView

@@ -14,10 +14,12 @@ import { makeStyles } from './SearchScreen.styles';
 
 const MAX_QUERY_LENGTH = 40;
 
-export function SearchScreen({ navigation }: ScreenProps<'Search'>) {
+export function SearchScreen({ navigation, route }: ScreenProps<'Search'>) {
   const styles = useStyles(makeStyles);
   const t = useTranslation();
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(
+    () => route.params?.query?.slice(0, MAX_QUERY_LENGTH) ?? '',
+  );
   const search = useSearch(query);
 
   const type = useCallback(

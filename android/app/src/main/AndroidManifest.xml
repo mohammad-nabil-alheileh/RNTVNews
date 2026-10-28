@@ -32,7 +32,15 @@
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="tvnewsreader" android:host="story" />
+            <data android:scheme="tvnewsreader" />
+        </intent-filter>
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+            <data android:host="dev.to" />
+            <data android:host="www.dev.to" />
         </intent-filter>
       </activity>
     </application>

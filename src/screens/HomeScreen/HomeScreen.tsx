@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import React, { ReactElement, useCallback, useEffect } from 'react';
+import { FlatList, ListRenderItem } from 'react-native';
 import { CATEGORIES } from '../../api/categories';
 import { fetchStoriesByTag, fetchTopStories } from '../../api/devto';
 import { prefetchLists } from '../../api/listCache';
@@ -7,23 +7,25 @@ import { clearRowMemory } from '../../api/rowMemory';
 import { CategoryRow } from '../../components/CategoryRow/CategoryRow';
 import { ErrorBoundary } from '../../components/shared/ErrorBoundary/ErrorBoundary';
 import { FocusGroup } from '../../components/shared/FocusGroup/FocusGroup';
+import { MeasuredCell } from '../../components/shared/MeasuredCell/MeasuredCell';
+import { MeasuredCellContext } from '../../components/shared/MeasuredCell/MeasuredCell.context';
 import { MainLayout } from '../../components/shared/MainLayout/MainLayout';
 import { StatusView } from '../../components/shared/StatusView/StatusView';
 import { TopStory } from '../../components/TopStory/TopStory';
-import { useCenteredScroll } from '../../hooks/useCenteredScroll/useCenteredScroll';
+import { TopStorySkeleton } from '../../components/TopStorySkeleton/TopStorySkeleton';
+import { useCenteredList } from '../../hooks/useCenteredList/useCenteredList';
 import { useCachedList } from '../../hooks/useCachedList/useCachedList';
 import { useListCacheReady } from '../../hooks/useListCacheReady/useListCacheReady';
 import { useLanguage } from '../../hooks/useLanguage/useLanguage';
 import { useStyles } from '../../hooks/useStyles/useStyles';
+import { scrollListTo } from '../../platform/smoothScroll/smoothScroll';
+import { Category } from '../../types/category';
 import { ScreenProps } from '../../types/navigation';
-import { RowFocus } from '../../types/layout';
 import { Story } from '../../types/story';
-import { isRowInWindow } from '../../utils/isRowInWindow/isRowInWindow';
 import { makeStyles } from './HomeScreen.styles';
 import { useTranslation } from '../../hooks/useTranslation/useTranslation';
 
-const TOP_SECTION = 'top';
-const TOP_ROW = -1;
+const keyOf = (category: Category) => category.tag;
 
 export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
   const t = useTranslation();
@@ -31,30 +33,18 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
   const language = useLanguage();
   const ready = useListCacheReady();
   const { state, reload } = useCachedList('top', fetchTopStories);
-  const { scrollRef, onLayout, sectionLayout, centerOn } = useCenteredScroll();
-  const [rowFocus, setRowFocus] = useState<RowFocus>({
-    row: TOP_ROW,
-    movingDown: true,
-  });
-
-  const moveRowFocus = useCallback((row: number) => {
-    setRowFocus(prev =>
-      prev.row === row ? prev : { row, movingDown: row > prev.row },
-    );
-  }, []);
+  const { listRef, onLayout, recordCell, centerOn } =
+    useCenteredList<Category>();
 
   const focusRow = useCallback(
-    (tag: string, index: number) => {
-      centerOn(tag);
-      moveRowFocus(index);
-    },
-    [centerOn, moveRowFocus],
+    (_tag: string, index: number) => centerOn(index),
+    [centerOn],
   );
 
-  const focusTop = useCallback(() => {
-    centerOn(TOP_SECTION);
-    moveRowFocus(TOP_ROW);
-  }, [centerOn, moveRowFocus]);
+  const focusTop = useCallback(
+    () => scrollListTo(listRef.current, 0),
+    [listRef],
+  );
 
   useEffect(() => clearRowMemory, []);
 
@@ -65,6 +55,20 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
         queue: list.map(item => item.id),
       }),
     [navigation],
+  );
+
+  const renderRow = useCallback<ListRenderItem<Category>>(
+    ({ item, index }) => (
+      <ErrorBoundary title={t('couldntShow', { name: item.label[language] })}>
+        <CategoryRow
+          category={item}
+          index={index}
+          onPressStory={openStory}
+          onFocusRow={focusRow}
+        />
+      </ErrorBoundary>
+    ),
+    [t, language, openStory, focusRow],
   );
 
   useEffect(() => {
@@ -79,20 +83,31 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
     );
   }, [ready]);
 
+  const renderList = (header: ReactElement) => (
+    <MeasuredCellContext.Provider value={recordCell}>
+      <FlatList
+        ref={listRef}
+        onLayout={onLayout}
+        data={CATEGORIES}
+        keyExtractor={keyOf}
+        renderItem={renderRow}
+        CellRendererComponent={MeasuredCell}
+        ListHeaderComponent={header}
+        initialNumToRender={3}
+        maxToRenderPerBatch={2}
+        windowSize={5}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.content}
+      />
+    </MeasuredCellContext.Provider>
+  );
+
   const renderContent = () => {
     if (!ready) {
       return null;
     }
     if (state.status === 'loading') {
-      return (
-        <StatusView
-          kind="loading"
-          title={t('loadingStories')}
-          actionLabel={t('reload')}
-          onAction={reload}
-          hasTVPreferredFocus
-        />
-      );
+      return renderList(<TopStorySkeleton style={styles.topStory} />);
     }
 
     if (state.status === 'offline') {
@@ -135,39 +150,15 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
       );
     }
 
-    return (
-      <ScrollView
-        ref={scrollRef}
-        onLayout={onLayout}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.content}
-      >
-        <View onLayout={sectionLayout(TOP_SECTION)}>
-          <FocusGroup trap={['left', 'right']} style={styles.topStory}>
-            <TopStory
-              story={top}
-              onPress={story => openStory(story, state.data)}
-              onFocus={focusTop}
-              hasTVPreferredFocus
-            />
-          </FocusGroup>
-        </View>
-        {CATEGORIES.map((category, index) => (
-          <View key={category.tag} onLayout={sectionLayout(category.tag)}>
-            <ErrorBoundary
-              title={t('couldntShow', { name: category.label[language] })}
-            >
-              <CategoryRow
-                category={category}
-                index={index}
-                active={isRowInWindow(index, rowFocus)}
-                onPressStory={openStory}
-                onFocusRow={focusRow}
-              />
-            </ErrorBoundary>
-          </View>
-        ))}
-      </ScrollView>
+    return renderList(
+      <FocusGroup trap={['left', 'right']} style={styles.topStory}>
+        <TopStory
+          story={top}
+          onPress={story => openStory(story, state.data)}
+          onFocus={focusTop}
+          hasTVPreferredFocus
+        />
+      </FocusGroup>,
     );
   };
 

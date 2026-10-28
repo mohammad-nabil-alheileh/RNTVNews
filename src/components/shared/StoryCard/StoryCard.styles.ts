@@ -48,12 +48,17 @@ export const makeStyles = ({
     body: {
       padding: spacing.md,
     },
+    titleBox: {
+      height: lineHeight.body * TITLE_LINES,
+      overflow: 'hidden',
+    },
     title: {
       color: colors.text,
       fontFamily,
       fontSize: fontSize.body,
       lineHeight: lineHeight.body,
-      height: lineHeight.body * TITLE_LINES,
+      maxHeight: lineHeight.body * TITLE_LINES,
+      overflow: 'hidden',
       fontWeight: '700',
     },
     meta: {

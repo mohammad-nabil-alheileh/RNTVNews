@@ -16,7 +16,7 @@ export function SignInScreen({ route }: ScreenProps<'SignIn'>) {
   const styles = useStyles(makeStyles);
   const t = useTranslation();
   const { state, newCode } = usePhoneSignIn();
-  const storyWaiting = route.params?.storyWaiting ?? false;
+  const linkWaiting = route.params?.linkWaiting;
 
   return (
     <View style={styles.screen}>
@@ -24,8 +24,10 @@ export function SignInScreen({ route }: ScreenProps<'SignIn'>) {
         <Text style={styles.title} accessibilityRole="header">
           {t('signInTitle')}
         </Text>
-        {storyWaiting ? (
-          <Text style={styles.storyWaiting}>{t('storyWaiting')}</Text>
+        {linkWaiting ? (
+          <Text style={styles.linkWaiting}>
+            {t(linkWaiting === 'story' ? 'storyWaiting' : 'pageWaiting')}
+          </Text>
         ) : null}
         <SignInCode state={state} />
         <FocusGroup

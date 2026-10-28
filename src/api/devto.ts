@@ -101,9 +101,16 @@ export function fetchLatestStories(): Promise<Story[]> {
   return fetchStoryList(`/articles/latest?per_page=${LATEST_PAGE_SIZE}`);
 }
 
-export async function fetchArticle(id: number): Promise<Article> {
-  const raw = await getJson<DevtoArticle>(`/articles/${id}`);
+function toArticle(raw: DevtoArticle): Article {
   const story = toStory(raw);
   addStories([story]);
   return { ...story, blocks: parseArticleBody(raw.body_html ?? '') };
+}
+
+export async function fetchArticle(id: number): Promise<Article> {
+  return toArticle(await getJson<DevtoArticle>(`/articles/${id}`));
+}
+
+export async function fetchArticleByPath(path: string): Promise<Article> {
+  return toArticle(await getJson<DevtoArticle>(`/articles/${path}`));
 }

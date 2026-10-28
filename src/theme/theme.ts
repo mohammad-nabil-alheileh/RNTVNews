@@ -15,6 +15,7 @@ export const colors = {
   background: '#10171d',
   surface: '#18222b',
   surfaceRaised: '#2a3743',
+  skeleton: '#34434f',
   text: '#e8eef3',
   textMuted: '#9fb0be',
   accent: '#4cc2e0',

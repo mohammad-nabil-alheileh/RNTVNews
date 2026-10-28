@@ -4,11 +4,11 @@ export type RootStackParamList = {
   Home: undefined;
   Category: { tag?: string };
   Article: { storyId: number; queue?: number[] };
-  Search: undefined;
+  Search: { query?: string } | undefined;
   Saved: undefined;
   Settings: undefined;
   About: undefined;
-  SignIn: { storyWaiting?: boolean } | undefined;
+  SignIn: { linkWaiting?: 'story' | 'page' } | undefined;
 };
 
 export type ScreenProps<Name extends keyof RootStackParamList> =

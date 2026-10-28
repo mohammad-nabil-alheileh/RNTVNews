@@ -31,7 +31,7 @@ export const makeStyles = ({
       fontWeight: '700',
       marginBottom: spacing.md,
     },
-    storyWaiting: {
+    linkWaiting: {
       color: colors.accent,
       fontFamily,
       fontSize: fontSize.body,

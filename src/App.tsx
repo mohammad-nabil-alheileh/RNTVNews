@@ -19,7 +19,8 @@ import { useSession } from './hooks/useSession/useSession';
 import { useSettings } from './hooks/useSettings/useSettings';
 import { startSpatialNavigation } from './platform/spatialNavigation/spatialNavigation';
 import { useTheme } from './hooks/useTheme/useTheme';
-import { useStoryLinks } from './hooks/useStoryLinks/useStoryLinks';
+import { useAppLinks } from './hooks/useAppLinks/useAppLinks';
+import { AppLink } from './types/appLink';
 import { ScreenLayoutProps } from './App.types';
 import { RootStackParamList } from './types/navigation';
 import { HomeScreen } from './screens/HomeScreen/HomeScreen';
@@ -52,10 +53,27 @@ function ScreenLayout({ children }: ScreenLayoutProps) {
   return <ScreenFrame>{children}</ScreenFrame>;
 }
 
-function openStoryOverHome(storyId: number) {
+function routeOf(link: AppLink) {
+  switch (link.screen) {
+    case 'Category':
+      return { name: link.screen, params: { tag: link.tag } };
+    case 'Article':
+      return { name: link.screen, params: { storyId: link.storyId } };
+    case 'Search':
+      return { name: link.screen, params: { query: link.query } };
+    default:
+      return { name: link.screen };
+  }
+}
+
+function openLinkOverHome(link: AppLink) {
+  if (link.screen === 'Home') {
+    navigationRef.reset({ index: 0, routes: [{ name: 'Home' }] });
+    return;
+  }
   navigationRef.reset({
     index: 1,
-    routes: [{ name: 'Home' }, { name: 'Article', params: { storyId } }],
+    routes: [{ name: 'Home' }, routeOf(link)],
   });
 }
 
@@ -63,27 +81,29 @@ function AppContent() {
   const { colors } = useTheme();
   const { session } = useSession();
   const [exitVisible, setExitVisible] = useState(false);
-  const [waitingStory, setWaitingStory] = useState<number | null>(null);
+  const [waitingLink, setWaitingLink] = useState<AppLink | null>(null);
 
   const hideExit = useCallback(() => setExitVisible(false), []);
 
-  const openLinkedStory = useCallback((storyId: number) => {
+  const openLink = useCallback((link: AppLink) => {
     setExitVisible(false);
     if (getSession().session) {
-      openStoryOverHome(storyId);
+      openLinkOverHome(link);
     } else {
-      setWaitingStory(storyId);
-      navigationRef.navigate('SignIn', { storyWaiting: true });
+      setWaitingLink(link);
+      navigationRef.navigate('SignIn', {
+        linkWaiting: link.screen === 'Article' ? 'story' : 'page',
+      });
     }
   }, []);
-  const onNavigationReady = useStoryLinks(openLinkedStory);
+  const onNavigationReady = useAppLinks(openLink);
 
   useEffect(() => {
-    if (session && waitingStory !== null) {
-      setWaitingStory(null);
-      openStoryOverHome(waitingStory);
+    if (session && waitingLink !== null) {
+      setWaitingLink(null);
+      openLinkOverHome(waitingLink);
     }
-  }, [session, waitingStory]);
+  }, [session, waitingLink]);
 
   useEffect(
     () =>

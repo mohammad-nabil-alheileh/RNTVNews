@@ -1,4 +1,4 @@
-import { storyLink } from '../../utils/parseStoryLink/parseStoryLink';
+import { storyLink } from '../../utils/parseAppLink/parseAppLink';
 
 interface LaunchParams {
   target?: unknown;
@@ -42,8 +42,9 @@ function linkFromParams(params: unknown): string | null {
 }
 
 function linkFromAddress(): string | null {
-  const story = new URLSearchParams(window.location.search).get('story');
-  return story ? storyLink(Number(story)) : null;
+  const params = new URLSearchParams(window.location.search);
+  const story = params.get('story');
+  return params.get('link') ?? (story ? storyLink(Number(story)) : null);
 }
 
 export function getInitialLink(): Promise<string | null> {

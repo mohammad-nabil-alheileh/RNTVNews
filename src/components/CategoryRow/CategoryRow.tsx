@@ -10,7 +10,6 @@ import { RowBody } from './components/RowBody/RowBody';
 function CategoryRowView({
   category,
   index,
-  active,
   onPressStory,
   onFocusRow,
 }: CategoryRowProps) {
@@ -30,14 +29,12 @@ function CategoryRowView({
         {label}
       </Text>
       <FocusGroup trap={['left', 'right']} style={styles.body}>
-        {active && (
-          <RowBody
-            tag={tag}
-            label={label}
-            onPressStory={onPressStory}
-            onFocus={focusRow}
-          />
-        )}
+        <RowBody
+          tag={tag}
+          label={label}
+          onPressStory={onPressStory}
+          onFocus={focusRow}
+        />
       </FocusGroup>
     </View>
   );

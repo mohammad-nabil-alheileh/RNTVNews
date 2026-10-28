@@ -28,6 +28,8 @@ const lastFocusedInGroup = new WeakMap<Element, HTMLElement>();
 const focusHistory: HTMLElement[] = [];
 let lastMoveAt = 0;
 let newlyPreferred: HTMLElement | null = null;
+let autoFocused: HTMLElement | null = null;
+let addedPreferred: HTMLElement | null = null;
 let started = false;
 
 function isVisible(element: HTMLElement): boolean {
@@ -215,6 +217,7 @@ function directionOf(event: KeyboardEvent): FocusDirection | undefined {
 }
 
 function onKeyDown(event: KeyboardEvent) {
+  autoFocused = null;
   const direction = directionOf(event);
   if (!direction) {
     return;
@@ -246,6 +249,10 @@ function rememberInHistory(element: HTMLElement) {
 }
 
 function restoreTarget(root: ParentNode): HTMLElement | undefined {
+  return rememberedIn(root) ?? focusablesIn(root)[0];
+}
+
+function rememberedIn(root: ParentNode): HTMLElement | undefined {
   for (let i = focusHistory.length - 1; i >= 0; i--) {
     const element = focusHistory[i];
     if (element.isConnected && root.contains(element) && isVisible(element)) {
@@ -255,7 +262,7 @@ function restoreTarget(root: ParentNode): HTMLElement | undefined {
   const preferred = Array.from(
     root.querySelectorAll<HTMLElement>(PREFERRED),
   ).find(isVisible);
-  return preferred ?? focusablesIn(root)[0];
+  return preferred;
 }
 
 function onFocusIn(event: FocusEvent) {
@@ -285,9 +292,44 @@ function recoverLostFocus() {
         ? newlyPreferred
         : undefined;
     newlyPreferred = null;
-    const target = fresh ?? restoreTarget(root);
+    addedPreferred = null;
+    const target = fresh ?? rememberedIn(root);
     if (target) {
+      autoFocused = null;
       focus(target);
+      return;
+    }
+    const first = focusablesIn(root)[0];
+    if (first) {
+      focus(first);
+      autoFocused = first;
+    }
+    return;
+  }
+
+  const arrived = addedPreferred;
+  addedPreferred = null;
+  if (
+    arrived &&
+    active === autoFocused &&
+    arrived.isConnected &&
+    root.contains(arrived) &&
+    isVisible(arrived)
+  ) {
+    autoFocused = null;
+    focus(arrived);
+  }
+}
+
+function findAddedPreferred(nodes: NodeList) {
+  for (const node of Array.from(nodes)) {
+    if (node instanceof HTMLElement) {
+      const preferred = node.matches(PREFERRED)
+        ? node
+        : node.querySelector<HTMLElement>(PREFERRED);
+      if (preferred) {
+        addedPreferred = preferred;
+      }
     }
   }
 }
@@ -307,6 +349,8 @@ export function startSpatialNavigation(): void {
       const target = record.target as HTMLElement;
       if (record.type === 'attributes' && target.matches(PREFERRED)) {
         newlyPreferred = target;
+      } else if (record.type === 'childList' && autoFocused) {
+        findAddedPreferred(record.addedNodes);
       }
     }
     if (scheduled) {

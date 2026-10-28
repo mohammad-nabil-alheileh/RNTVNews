@@ -14,6 +14,7 @@ import { StatusView } from '../../../shared/StatusView/StatusView';
 import { StoryCard } from '../../../shared/StoryCard/StoryCard';
 import { STORY_CARD_WIDTH } from '../../../shared/StoryCard/StoryCard.styles';
 import { RowGap } from './components/RowGap/RowGap';
+import { RowSkeleton } from './components/RowSkeleton/RowSkeleton';
 import { makeStyles } from './RowBody.styles';
 import { RowBodyProps } from './RowBody.types';
 import { useTranslation } from '../../../../hooks/useTranslation/useTranslation';
@@ -103,14 +104,7 @@ export function RowBody({ tag, label, onPressStory, onFocus }: RowBodyProps) {
 
   switch (state.status) {
     case 'loading':
-      return (
-        <StatusView
-          kind="loading"
-          title={t('loadingCategory', { name: label })}
-          actionLabel={t('reload')}
-          onAction={reload}
-        />
-      );
+      return <RowSkeleton />;
     case 'offline':
       return (
         <StatusView
